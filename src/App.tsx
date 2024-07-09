@@ -1,5 +1,8 @@
-function App() {
-  return <div></div>
+/**
+ * APP根组件
+ */
+function App () {
+    return <div></div>;
 }
 
-export default App
+export default App;
