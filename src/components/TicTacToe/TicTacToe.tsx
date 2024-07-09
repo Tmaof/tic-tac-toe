@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Board, { SquaresList } from '../Board/Board'; // 导入棋盘格子列表的类型定义
 
 /** 计算井字棋的胜利者 */
@@ -29,8 +29,30 @@ const getInitSquares = function getInitSquares (): SquaresList {
 
 /** 井字棋游戏组件 */
 const TicTacToe: React.FC = () => {
-    /** 棋盘状态，初始化为9个null，表示所有格子都是空的 */
-    const [squares, setSquares] = useState<SquaresList>(getInitSquares());
+    /** 棋盘状态历史记录的列表 */
+    const [history, setHistory] = useState([getInitSquares()]);
+    /** 当前棋盘记录的位置 */
+    const [currentMove, setCurrentMove] = useState(0);
+    /** 计算当前的棋盘状态 */
+    const currentSquares = useMemo(() => {
+        return history[currentMove];
+    }, [currentMove, history]);
+    /** 时间旅行的每一项元素 */
+    const timeTravelItemList = useMemo(() => {
+        return history.map((_squares, index) => {
+            let description;
+            if (index > 0) {
+                description = `回到状态 #${index}`;
+            } else {
+                description = '回到游戏开始';
+            }
+            return (
+                <li key={index}>
+                    <button onClick={() => setCurrentMove(index)}>{description}</button>
+                </li>
+            );
+        });
+    }, [history]);
 
     /** 棋手状态，包含棋手列表和当前棋手的索引 */
     const [playerFlag, setPlayerFlag] = useState({
@@ -40,20 +62,23 @@ const TicTacToe: React.FC = () => {
 
     /** 监听棋盘的改变 */
     useEffect(() => {
-    // 下完一棋后需要判断是否存在胜利者
-        const winner = calculateWinner(squares);
+        // 下完一棋后需要判断是否存在胜利者
+        const winner = calculateWinner(currentSquares);
         if (winner) {
             window.confirm(`棋手${winner}胜利了！`);
         }
-    }, [squares]);
+    }, [currentSquares]);
 
     /**
    * 处理下棋的函数
    * @param {SquaresList} nextSquares - 更新后的棋盘状态
    */
     const handlePlay = function handlePlay (nextSquares: SquaresList) {
-    // 更新棋盘状态
-        setSquares(nextSquares);
+        // 将新的状态添加到历史列表
+        const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+        setHistory(nextHistory);
+        // 更新棋盘记录的位置：更新currentMove后currentSquares会自动更新
+        setCurrentMove(nextHistory.length - 1);
         // 切换下一位棋手的棋子
         setPlayerFlag((prevState) => ({
             list: prevState.list,
@@ -68,10 +93,13 @@ const TicTacToe: React.FC = () => {
             <div>下一位棋手是：{playerFlag.list[playerFlag.next]}</div>
             {/* 渲染棋盘组件 */}
             <Board
-                squares={squares}
+                squares={currentSquares}
                 nextFlag={playerFlag.list[playerFlag.next]}
                 onPlay={handlePlay}
             />
+            {/* 时间旅行 */}
+            <p>时间旅行</p>
+            <ol>{timeTravelItemList}</ol>
         </div>
     );
 };
