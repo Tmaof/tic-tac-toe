@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Backgammon from '../Backgammon/Backgammon'; // 导入五子棋组件
 import TicTacToe from '../TicTacToe/TicTacToe'; // 导入井字棋组件
 import './Game.scss'; // 导入样式文件
@@ -30,13 +30,13 @@ const Game: React.FC = () => {
     /**
    * 根据当前模式获取对应的游戏组件
    */
-    const getGameComponent = () => {
+    const gameComponent = useMemo(() => {
         if (mode === MODE.TICTACTOE) {
             return <TicTacToe />;
         } else if (mode === MODE.BACKGAMMON) {
             return <Backgammon />;
         }
-    };
+    }, [mode]);
 
     return (
         <div className="game-container">
@@ -65,7 +65,7 @@ const Game: React.FC = () => {
             </div>
             {/* 游戏视图区域，根据模式显示不同的游戏组件 */}
             <div className='game-view'>
-                {getGameComponent()}
+                {gameComponent}
             </div>
         </div>
     );
