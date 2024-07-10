@@ -1,3 +1,5 @@
+import { PosInfo } from '../../utils/index.type';
+
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
 export type SquaresList = ((string | null)[])[]
 
@@ -17,4 +19,6 @@ export type BoardProps = {
      * @returns
      */
     onPlay: (squares: SquaresList, posX:number, posY:number) => void;
+    /** 当游戏结束时，在同一条线上的点的坐标的一个列表 */
+    onLinePointPosList:PosInfo[];
 }

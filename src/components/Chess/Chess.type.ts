@@ -1,4 +1,5 @@
 import { SquaresList } from '../Board/Board.type';
+import { PosInfo } from '../../utils/index.type';
 
 /** 棋类组件的Props的类型 */
 export type ChessProps = {
@@ -14,8 +15,12 @@ export type ChessProps = {
 
 /** 历史记录对象的类型 */
 export type HistoryObj = {
+    /** 棋盘的棋子列表 */
     squares: SquaresList;
+    /** 下一个棋手棋子的索引 */
     nextPlayerIndex: number;
+    /** 当游戏结束时，在同一条线上的点的坐标的一个列表 */
+    onLinePointPosList?: PosInfo[];
 }
 
 /** 历史记录列表的类型 */

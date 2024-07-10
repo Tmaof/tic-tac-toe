@@ -57,20 +57,25 @@ const Chess: React.FC<ChessProps> = (props) => {
             window.confirm('游戏已经结束了！');
             return;
         }
+        // 下完一棋后需要判断是否存在胜利者
+        const calculateRes = calculateWinner(nextSquares, props.successNeedNum, posX, posY);
+        let onLinePointPosList;
+        if (calculateRes) {
+            // 存在胜利者，游戏结束
+            const { winner, onLinePointPosList: list } = calculateRes;
+            onLinePointPosList = list;
+            setGameOver(true);
+            window.confirm(`棋手${winner}胜利了！`);
+        }
         /** 新的下一个棋手的棋子的索引 */
         const nextPlayerIndex = (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length;
         /** 新的历史记录对象 */
-        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex };
+        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList };
         // 将新的历史状态添加到历史列表
         const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory];
-        setHistoryList(() => newHistoryList);
+        setHistoryList(newHistoryList);
         // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
-        setCurrentMove(() => newHistoryList.length - 1);
-        // 下完一棋后需要判断是否存在胜利者
-        const winner = calculateWinner(nextSquares, props.successNeedNum, posX, posY);
-        if (!winner) return;
-        setGameOver(true);
-        window.confirm(`棋手${winner}胜利了！`);
+        setCurrentMove(newHistoryList.length - 1);
     };
 
     /** 渲染组件 */
@@ -83,6 +88,7 @@ const Chess: React.FC<ChessProps> = (props) => {
                 squares={currentHistory.squares}
                 nextFlag={props.playerFlags[currentHistory.nextPlayerIndex]}
                 onPlay={handlePlay}
+                onLinePointPosList={currentHistory.onLinePointPosList || []}
             />
             {/* 时间旅行 */}
             <p>时间旅行：</p>

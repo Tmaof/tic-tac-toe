@@ -1,6 +1,7 @@
 import React from 'react';
 import './Board.scss';
 import { BoardProps } from './Board.type';
+import classNames from 'classnames';
 
 /** 棋盘组件，用于渲染棋盘和处理下棋逻辑 */
 const Board: React.FC<BoardProps> = (props) => {
@@ -9,6 +10,7 @@ const Board: React.FC<BoardProps> = (props) => {
         squares,
         nextFlag,
         onPlay,
+        onLinePointPosList,
     } = props;
 
     /**
@@ -30,7 +32,8 @@ const Board: React.FC<BoardProps> = (props) => {
             {squares.map((list, row) => {
                 return (<div key={row} className='board-row'>
                     {list.map(((value, col) => (<div
-                        className="square"
+                        // 为胜利时在一条线上的点添加高亮样式
+                        className={classNames('square', { 'active-square': onLinePointPosList.some(pos => pos.posY === row && pos.posX === col) })}
                         style={{ width: latticeWidth, height: latticeWidth }  }
                         onClick={() => handleClick(row, col)}
                         key={col}
