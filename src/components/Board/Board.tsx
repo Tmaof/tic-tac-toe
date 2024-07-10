@@ -18,7 +18,7 @@ const Board: React.FC<BoardProps> = (props) => {
      * @param row 格子的行号
      * @param col 格子的列号
      */
-    const handleClick = function handleClick (row: number, col: number) {
+    const handleClick =  (row: number, col: number) => {
         if (squares[row][col]) return; // 如果格子有值了，则无需操作
         const nextSquares = JSON.parse(JSON.stringify(squares)); // 复制当前棋盘状态，注意：由于是二维数组，需要深拷贝，否则时间回溯将出现bug
         nextSquares[row][col] = nextFlag; // 在点击位置放置棋子

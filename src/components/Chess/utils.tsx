@@ -6,7 +6,7 @@ import { HistoryList } from './Chess.type';
  * @param colNum 棋盘列数
  * @returns 历史数据列表
  */
-export const getInitHistoryList = function getInitHistoryList (rowNum:number, colNum:number): HistoryList {
+export const getInitHistoryList =   (rowNum:number, colNum:number): HistoryList => {
     const squares = [];
     for (let index = 0; index < rowNum; index++) {
         squares.push(Array(colNum).fill(null));
@@ -15,5 +15,6 @@ export const getInitHistoryList = function getInitHistoryList (rowNum:number, co
         squares,
         nextPlayerIndex: 0,
         gameOver: false,
+        onLinePointPosList: [],
     }];
 };

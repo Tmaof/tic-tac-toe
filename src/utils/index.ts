@@ -12,7 +12,7 @@ import { PosInfo } from './index.type';
  * @param posY 棋子纵坐标(行位置)
  * @returns 获胜者的标记（字符串）和在同一条线上的点的坐标
  */
-export const calculateWinner = function calculateWinner (squares: SquaresList, successNeedNum: number, posX: number, posY: number) {
+export const calculateWinner = (squares: SquaresList, successNeedNum: number, posX: number, posY: number) => {
     /** 保存有玩家胜利时，在同一条线上的点的坐标 */
     let onLinePointPosList:PosInfo[] = [];
     /**
@@ -21,7 +21,7 @@ export const calculateWinner = function calculateWinner (squares: SquaresList, s
      * @param dy 在y轴上的移动步长
      * @returns
      */
-    const checkDirection = function checkDirection (dx: number, dy: number) {
+    const checkDirection = (dx: number, dy: number) => {
         let currentCount = 1; // 当前连续的棋子数量
         onLinePointPosList.push({ posY, posX });
 
@@ -71,6 +71,9 @@ export const calculateWinner = function calculateWinner (squares: SquaresList, s
             onLinePointPosList,
         };
     }
-
-    return null; // 如果没有获胜者
+    // 如果没有获胜者
+    return {
+        winner: null,
+        onLinePointPosList: [],
+    };
 };

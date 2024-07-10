@@ -1,36 +1,17 @@
-import { ChessProps } from '../Chess/Chess.type';
 import { GameConfig } from './Game.type';
 
-/**
- * 创建游戏配置对象
- *
- * @param name 游戏名称
- * @param playerFlags 不同棋手的棋子样式，支持两个以上的多玩家
- * @param rowNum 棋盘的行数
- * @param colNum 棋盘的列数
- * @param successNeedNum 要求获胜时在一条线上的最少棋子数量
- * @returns 返回游戏配置对象
- */
-const createGameConfig = function createGameConfig (name: GameConfig['name'], playerFlags:ChessProps['playerFlags'], rowNum:ChessProps['rowNum'], colNum:ChessProps['colNum'], successNeedNum:ChessProps['successNeedNum']): GameConfig {
-    return {
-        name,
-        ChessProps: {
-            playerFlags,
-            rowNum,
-            colNum,
-            successNeedNum,
-        },
-    };
-};
 
 /**
  * 获取游戏配置列表
  */
-export const getGameConfigList = function getGameConfigList (): GameConfig[] {
+export const getGameConfigList = (): GameConfig[] => {
+    const playerInfoList1 = [{ name: '玩家1', id: 1, flag: '❌' }, { name: '玩家2', id: 2, flag: '🔘' }];
+    const playerInfoList2 = [{ name: '玩家1', id: 1, flag: '⚫' }, { name: '玩家2', id: 2, flag: '⚪' }];
+    const playerInfoList3 =  [{ name: '玩家1', id: 1, flag: '🟢' }, { name: '玩家2', id: 2, flag: '🟣' }, { name: '玩家3', id: 3, flag: '🔵' }];
     return [
-        createGameConfig('井字棋', ['❌', '🔘'], 3, 3,  3),
-        createGameConfig('五子棋（15*15）', ['⚫', '⚪'], 15, 15,  5),
-        createGameConfig('五子棋（15*25）', ['⚫', '⚪'], 15, 25,  5),
-        createGameConfig('七子棋（3个玩家）', ['🟢', '🟣', '🔵'], 20, 20,  7),
+        { id: 1, name: '井字棋', ChessProps: { playerInfoList: playerInfoList1, rowNum: 3, colNum: 3, successNeedNum: 3 } },
+        { id: 2, name: '五子棋（15*15）', ChessProps: { playerInfoList: playerInfoList2, rowNum: 15, colNum: 15, successNeedNum: 5 } },
+        { id: 3, name: '五子棋（15*25）', ChessProps: { playerInfoList: playerInfoList2, rowNum: 15, colNum: 25, successNeedNum: 5 } },
+        { id: 4, name: '七子棋（3个玩家）', ChessProps: { playerInfoList: playerInfoList3, rowNum: 20, colNum: 20, successNeedNum: 7 } },
     ];
 };
