@@ -14,5 +14,6 @@ export const getInitHistoryList = function getInitHistoryList (rowNum:number, co
     return [{
         squares,
         nextPlayerIndex: 0,
+        gameOver: false,
     }];
 };

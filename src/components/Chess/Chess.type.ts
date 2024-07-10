@@ -21,6 +21,8 @@ export type HistoryObj = {
     nextPlayerIndex: number;
     /** 当游戏结束时，在同一条线上的点的坐标的一个列表 */
     onLinePointPosList?: PosInfo[];
+    /** 该状态记录下游戏是否结束 */
+    gameOver: boolean;
 }
 
 /** 历史记录列表的类型 */

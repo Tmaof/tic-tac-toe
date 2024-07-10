@@ -11,8 +11,6 @@ const Chess: React.FC<ChessProps> = (props) => {
     const [historyList, setHistoryList] = useState<HistoryList>(getInitHistoryList(props.rowNum, props.colNum));
     /** 当前棋盘记录的位置 */
     const [currentMove, setCurrentMove] = useState(0);
-    /** 游戏是否结束 */
-    const [gameOver, setGameOver] = useState(false);
     /** 计算当前的棋盘历史状态 */
     const currentHistory = useMemo(() => {
         return historyList[currentMove];
@@ -24,12 +22,6 @@ const Chess: React.FC<ChessProps> = (props) => {
     const handleTimeTrave = function handleTimeTrave (index: number) {
         // 更新当前历史记录的索引
         setCurrentMove(index);
-        // 恢复游戏开始（当回溯到最后一个状态记录时，游戏已经结束，不能恢复开始）
-        if (index === historyList.length - 1) {
-            setGameOver(true);
-        } else {
-            setGameOver(false);
-        }
     };
     /** 计算时间旅行的每一项元素 */
     const timeTravelItemList = useMemo(() => {
@@ -53,24 +45,25 @@ const Chess: React.FC<ChessProps> = (props) => {
      * @param {SquaresList} nextSquares - 更新后的棋盘状态
      */
     const handlePlay = function handlePlay (nextSquares: SquaresList, posX:number, posY:number) {
-        if (gameOver) {
+        if (currentHistory.gameOver) {
             window.confirm('游戏已经结束了！');
             return;
         }
         // 下完一棋后需要判断是否存在胜利者
         const calculateRes = calculateWinner(nextSquares, props.successNeedNum, posX, posY);
         let onLinePointPosList;
+        let gameOver = false;
         if (calculateRes) {
             // 存在胜利者，游戏结束
             const { winner, onLinePointPosList: list } = calculateRes;
             onLinePointPosList = list;
-            setGameOver(true);
+            gameOver = true;
             window.confirm(`棋手${winner}胜利了！`);
         }
         /** 新的下一个棋手的棋子的索引 */
         const nextPlayerIndex = (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length;
         /** 新的历史记录对象 */
-        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList };
+        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver };
         // 将新的历史状态添加到历史列表
         const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory];
         setHistoryList(newHistoryList);
