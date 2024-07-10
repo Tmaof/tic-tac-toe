@@ -9,6 +9,12 @@ export type BoardProps = {
     squares: SquaresList;
     /** 下一个棋子的样式 */
     nextFlag: string;
-    /** 完成一次下棋后触发的回调函数，参数为更新后的棋盘格子列表 */
-    onPlay: (squares: SquaresList) => void;
+    /**
+     * 完成一次下棋后触发的回调函数
+     * @param squares 棋盘格子二维列表
+     * @param posX 点击的棋子横坐标(列位置)
+     * @param posY 点击的棋子纵坐标(行位置)
+     * @returns
+     */
+    onPlay: (squares: SquaresList, posX:number, posY:number) => void;
 }
