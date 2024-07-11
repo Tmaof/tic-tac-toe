@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import './Game.scss';
 import Chess from '../Chess/Chess';
-import { getGameConfigList } from './utils';
+import { getGameConfigListAPI } from '../../apis/game';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { setGameConfigList, setCurrentConfigId } from '../../store/modules/game/actions';
 
-/** 各种游戏模式配置的一个列表 */
-const configList = getGameConfigList();
 
 /** 游戏组件定义 */
 const Game: React.FC = () => {
-    /** 当前选择的模式的id */
-    const [currentModeId, setCurrentModeId] = useState(1);
+    const dispatch = useAppDispatch();
+    const configList = useAppSelector((state) => state.game.gameConfigList);
+    const currentConfigId = useAppSelector((state) => state.game.currentConfigId);
+    /** 组件挂载后，获取游戏配置列表 */
+    useEffect(() => {
+        getGameConfigListAPI().then((configList) => {
+            dispatch(setGameConfigList(configList));
+            dispatch(setCurrentConfigId(configList[0].id));
+        },);
+    }, []);
 
     return (
         <div className="game-container">
@@ -23,8 +31,8 @@ const Game: React.FC = () => {
                                     type="radio"
                                     name="mode"
                                     value={config.id}
-                                    checked={currentModeId === config.id}
-                                    onChange={() => setCurrentModeId(config.id)}
+                                    checked={currentConfigId === config.id}
+                                    onChange={() => dispatch(setCurrentConfigId(config.id))}
                                 />
                                 {config.name}
                             </label>
@@ -36,7 +44,7 @@ const Game: React.FC = () => {
             <div className='game-view'>
                 {
                     configList.map((config) => {
-                        return (currentModeId === config.id) && <Chess key={config.id} {...config.ChessProps} ></Chess>;
+                        return (currentConfigId === config.id) && <Chess key={config.id} {...config.ChessProps} ></Chess>;
                     })
                 }
             </div>
