@@ -31,7 +31,7 @@ class Chess extends PureComponent<AllChessProps> {
         const { rowNum, colNum } = this.props;
         /** 组件挂载后，初始化历史记录列表 */
         this.props.setHistoryList(getInitHistoryList(rowNum, colNum));
-        setCurrentHistoryIndex(0);
+        this.props.setCurrentHistoryIndex(0);
     }
 
     componentWillUnmount () {
