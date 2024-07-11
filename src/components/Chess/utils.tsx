@@ -1,4 +1,4 @@
-import { HistoryList } from './Chess.type';
+import { HistoryList } from '../../store/modules/history/reducer.type';
 
 /**
  * 初始棋盘历史数据列表，其中每一个历史对象包含棋盘二维数组和下一位棋手的棋子
