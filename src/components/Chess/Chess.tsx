@@ -1,27 +1,40 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import Board from '../Board/Board';
-import { ChessProps, HistoryList, HistoryObj } from './Chess.type';
+import { ChessProps } from './Chess.type';
 import { getInitHistoryList } from './utils';
 import { SquaresList } from '../Board/Board.type';
 import { calculateWinner } from '../../utils';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { setHistoryList, setCurrentHistoryIndex, resetHistory } from '../../store/modules/history/action';
+import { HistoryObj } from '../../store/modules/history/reducer.type';
 
 /** 棋类游戏组件 */
 const Chess: React.FC<ChessProps> = (props) => {
+    const dispatch = useAppDispatch();
     /** 棋盘状态历史记录的列表 */
-    const [historyList, setHistoryList] = useState<HistoryList>(getInitHistoryList(props.rowNum, props.colNum));
+    const historyList = useAppSelector(state => state.history.historyList);
     /** 当前棋盘记录的位置 */
-    const [currentMove, setCurrentMove] = useState(0);
-    /** 计算当前的棋盘历史状态 */
+    const currentHistoryIndex = useAppSelector(state => state.history.currentHistoryIndex);
+    /** 组件挂载后，初始化历史记录列表 */
+    useEffect(() => {
+        dispatch(setHistoryList(getInitHistoryList(props.rowNum, props.colNum)));
+        dispatch(setCurrentHistoryIndex(0));
+        /** 组件卸载时，重置历史列表 */
+        return () => {
+            dispatch(resetHistory());
+        };
+    }, []);
+    /** 计算当前的棋盘状态 */
     const currentHistory = useMemo(() => {
-        return historyList[currentMove];
-    }, [currentMove, historyList]);
+        return historyList[currentHistoryIndex];
+    }, [currentHistoryIndex, historyList]);
     /**
     * 处理时间旅行
     * @param index 历史记录的索引
     */
     const handleTimeTrave =  (index: number) => {
         // 更新当前历史记录的索引
-        setCurrentMove(index);
+        dispatch(setCurrentHistoryIndex(index));
     };
     /** 计算时间旅行的每一项元素 */
     const timeTravelItemList = useMemo(() => {
@@ -55,10 +68,10 @@ const Chess: React.FC<ChessProps> = (props) => {
         /** 新的历史记录对象 */
         const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver: winner !== null };
         // 将新的历史状态添加到历史列表
-        const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory];
-        setHistoryList(newHistoryList);
-        // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
-        setCurrentMove(newHistoryList.length - 1);
+        const newHistoryList = [...historyList.slice(0, currentHistoryIndex + 1), newHistory];
+        dispatch(setHistoryList(newHistoryList));
+        // 更新棋盘记录的位置：更新索引后currentHistory会自动更新
+        dispatch(setCurrentHistoryIndex(newHistoryList.length - 1));
     };
 
     /** 渲染组件 */
