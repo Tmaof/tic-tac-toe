@@ -1,13 +1,23 @@
 ### 优化 1：
+
 #### 对组件更高的抽象，提高组件的可复用可拓展性，理解数据驱动视图（配置对象列表）
+
 #### 减少不必要的 div
+
 #### 优化计算胜利者的逻辑，使其更具通用性
+
 #### 减少不必要的 useMemo
+
 #### 如果不符合条件直接返回，减少不必要的 if-else
+
 #### 仔细测试代码，减少 bug
+
 ### 优化 2：
+
 #### 减少不必要的数据派生操作，想清楚是否可以直接利用当前数据
+
 old：
+
 ```tsx
 /** 用于渲染的模式选择列表 */
 const selectList = configList.map((config, index) => {
@@ -19,12 +29,17 @@ const selectList = configList.map((config, index) => {
 
 // selectList.map(({ name, configIndex }) => {
 ```
+
 new：
+
 ```tsx
 configList.map((config, index) => {
 ```
+
 #### 当一个生成对象的函数参数太多，不如直接写对象：
+
 old：
+
 ```tsx
 
 /**
@@ -61,7 +76,9 @@ export const getGameConfigList = function getGameConfigList (): GameConfig[] {
     ];
 };
 ```
+
 new：
+
 ```tsx
 
 /**
@@ -77,7 +94,9 @@ export const getGameConfigList = function getGameConfigList (): GameConfig[] {
 };
 
 ```
+
 #### 将多属性的数据抽象为对象，并为对象提供唯一标识
+
 ```tsx
 /**
  * 获取游戏配置列表
@@ -91,6 +110,7 @@ export const getGameConfigList = function getGameConfigList (): GameConfig[] {
     ];
 };
 ```
+
 ```tsx
             {/* 游戏视图区域，根据模式显示不同的游戏组件 */}
             <div className='game-view'>
@@ -101,8 +121,11 @@ export const getGameConfigList = function getGameConfigList (): GameConfig[] {
                 }
             </div>
 ```
+
 #### 将棋手和他使用的棋子抽象为一个对象，并给一个 ID
+
 可能的例子：
+
 ```tsx
 /** 玩家信息 */
 export type PlayerInfo = {
@@ -127,8 +150,11 @@ export type ChessProps = {
     successNeedNum: number;
 }
 ```
+
 #### 函数的声明方式，尽量使用箭头函数的形式，普通函数有动态 this 的问题，注意匿名函数对调试的影响？
+
 old：
+
 ```tsx
 /**
  * 获取游戏配置列表
@@ -143,7 +169,9 @@ export const getGameConfigList = function getGameConfigList (): GameConfig[] {
 };
 
 ```
+
 new：
+
 ```tsx
 /**
  * 获取游戏配置列表
@@ -158,7 +186,9 @@ export const getGameConfigList = (): GameConfig[] => {
 };
 
 ```
+
 函数的 name：
+
 ```tsx
 const myFn = () => {
   console.log('hello world')
@@ -179,7 +209,9 @@ const myFn3 = function test() {
 console.log(myFn3.name)
 
 ```
+
 #### 使用`.d.ts`文件声明类型，eslint 不检查？
+
 ```tsx
 // src\components\Board\Board.type.ts
 import { PosInfo } from '../../utils/index.type';
@@ -187,12 +219,15 @@ import { PosInfo } from '../../utils/index.type';
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
 export type SquaresList = ((string | null)[])[]
 ```
+
 ```tsx
 src\components\Board\test.d.ts
 import { SquaresList } from './Board.type';
 // 运行npm run lint 命令报错了
 ```
+
 运行npm run lint 命令报错了：
+
 ```tsx
 > tic-tac-toe@0.0.0 lint
 > eslint . --fix --ext ts,tsx,cjs --report-unused-disable-directives --max-warnings 0
@@ -203,9 +238,13 @@ D:\Code\mycode\tic-tac-toe\src\components\Board\test.d.ts
 
 ✖ 1 problem (1 error, 0 warnings)
 ```
+
 ![image.png](https://cdn.nlark.com/yuque/0/2024/png/34576819/1720614209317-3915c32b-1caf-44a2-9a6b-4364dddb9446.png#averageHue=%23f5f4f2&clientId=u9afbce02-ae85-4&from=paste&height=440&id=u3d7b49aa&originHeight=651&originWidth=354&originalType=binary&ratio=1&rotation=0&showTitle=false&size=40295&status=done&style=none&taskId=u2ecb46e2-a0b0-487e-ace4-65ddf6daf7f&title=&width=239)
+
 #### 减少 let 声明变量，之后赋值的情况
+
 old：
+
 ```tsx
     /** 计算时间旅行的每一项元素 */
     const timeTravelItemList = useMemo(() => {
@@ -224,7 +263,9 @@ old：
         });
     }, [historyList]);
 ```
+
 new：
+
 ```tsx
     /** 计算时间旅行的每一项元素 */
     const timeTravelItemList = useMemo(() => {
@@ -238,7 +279,9 @@ new：
         });
     }, [historyList]);
 ```
+
 old：
+
 ```tsx
   /**
      * 处理下棋的函数
@@ -271,14 +314,19 @@ old：
         setCurrentMove(newHistoryList.length - 1);
     };
 ```
+
 new：
+
 ```tsx
 需要修改calculateWinner方法，使其返回的数据结构，类型一致，这样就不用再判断  if (calculateRes) {}，也不用声明
 let onLinePointPosList;
 let gameOver = false;
 ```
+
 #### 函数返回的数据结构尽量一致
+
 old：
+
 ```tsx
 /**
  * 计算胜利者。
@@ -308,7 +356,9 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     return null; // 如果没有获胜者
 };
 ```
+
 new：
+
 ```tsx
 /**
  * 计算胜利者。
@@ -342,7 +392,9 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     };
 };
 ```
+
 这样我们的`handlePlay`函数就不存在 let 声明变量，之后赋值的问题了：
+
 ```tsx
     /**
      * 处理下棋的函数
@@ -371,3 +423,124 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     };
 ```
 
+
+### 优化 3
+
+#### 将设置 redux 状态的行为提取为一个函数，而不是通过 props 传递 dispatch 函数
+
+**old：**
+
+```tsx
+import  { PureComponent } from 'react';
+import './Game.scss';
+import Chess from '../Chess/Chess';
+import { getGameConfigListAPI } from '../../apis/game';
+import { RootState,  } from '../../store';
+import { setGameConfigList, setCurrentConfigId } from '../../store/modules/game/actions';
+import { connect } from 'react-redux';
+
+
+/** 映射状态到Game组件的props */
+const mapStateToProps = (state:RootState) => {
+    return {
+        configList: state.game.gameConfigList,
+        currentConfigId: state.game.currentConfigId,
+    };
+};
+
+/** 映射dispatch到Game组件的props */
+/** 包含 action creater 函数的一个对象，映射到组件props并调用时会自动dispatch，如：dispatch(setGameConfigList())  */
+const mapDispatchToProps = {
+    setGameConfigList,
+    setCurrentConfigId,
+};
+
+type GameProps = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+
+/** 游戏组件定义 */
+class Game extends PureComponent<GameProps> {
+    /** 组件挂载后，获取游戏配置列表 */
+    componentDidMount () {
+        getGameConfigListAPI().then((configList) => {
+            this.props.setGameConfigList(configList);
+            this.props.setCurrentConfigId(configList[0].id);
+        });
+    }
+
+    render () {
+      。。。
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game);
+```
+
+**new：**
+
+**抽离为如下方法：**
+
+```tsx
+// src\store\modules\game\utils.ts
+import { store } from '../..';
+import { setCurrentConfigId, setGameConfigList } from './actions';
+import { GameConfig, GameConfigId } from './reducer.type';
+
+/**
+ * 设置当前使用的游戏配置id(即当前的棋类游戏)
+ * @param configId 配置id
+ */
+export const setCurrentConfigIdUtil = (configId:GameConfigId) => {
+    store.dispatch(setCurrentConfigId(configId));
+};
+
+/**
+ * 设置游戏的配置列表
+ * @param gameConfigList 配置列表
+ */
+export const setGameConfigListUtil = (gameConfigList: GameConfig[]) => {
+    store.dispatch(setGameConfigList(gameConfigList));
+};
+```
+
+**使用：**
+
+```tsx
+import  { PureComponent } from 'react';
+import './Game.scss';
+import Chess from '../Chess/Chess';
+import { getGameConfigListAPI } from '../../apis/game';
+import { RootState,  } from '../../store';
+import { connect } from 'react-redux';
+import { setCurrentConfigIdUtil, setGameConfigListUtil } from '../../store/modules/game/utils';
+
+
+/** 映射状态到Game组件的props */
+const mapStateToProps = (state:RootState) => {
+    return {
+        configList: state.game.gameConfigList,
+        currentConfigId: state.game.currentConfigId,
+    };
+};
+
+type GameProps = ReturnType<typeof mapStateToProps>;
+
+/** 游戏组件定义 */
+class Game extends PureComponent<GameProps> {
+    /** 组件挂载后，获取游戏配置列表 */
+    componentDidMount () {
+        getGameConfigListAPI().then((configList) => {
+            setGameConfigListUtil(configList);
+            setCurrentConfigIdUtil(configList[0].id);
+        });
+    }
+
+    render () {
+        。。。
+    }
+}
+
+
+export default connect(mapStateToProps)(Game);
+```

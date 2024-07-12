@@ -3,8 +3,8 @@ import './Game.scss';
 import Chess from '../Chess/Chess';
 import { getGameConfigListAPI } from '../../apis/game';
 import { RootState,  } from '../../store';
-import { setGameConfigList, setCurrentConfigId } from '../../store/modules/game/actions';
 import { connect } from 'react-redux';
+import { setCurrentConfigIdUtil, setGameConfigListUtil } from '../../store/modules/game/utils';
 
 
 /** 映射状态到Game组件的props */
@@ -15,36 +15,20 @@ const mapStateToProps = (state:RootState) => {
     };
 };
 
-/** 映射dispatch到Game组件的props */
-// const mapDispatchToProps = (dispatch:AppDispatch) => (
-//     {
-//         setGameConfigList: (gameConfigList: GameConfig[]) => dispatch(setGameConfigList(gameConfigList)),
-//         setCurrentConfigId: (currentId: number) => dispatch(setCurrentConfigId(currentId)),
-//     }
-// );
-// type GameProps = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatchToProps>;
-
-/** 包含 action creater 函数的一个对象，映射到组件props并调用时会自动dispatch，如：dispatch(setGameConfigList())  */
-const mapDispatchToProps = {
-    setGameConfigList,
-    setCurrentConfigId,
-};
-
-type GameProps = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
-
+type GameProps = ReturnType<typeof mapStateToProps>;
 
 /** 游戏组件定义 */
 class Game extends PureComponent<GameProps> {
     /** 组件挂载后，获取游戏配置列表 */
     componentDidMount () {
         getGameConfigListAPI().then((configList) => {
-            this.props.setGameConfigList(configList);
-            this.props.setCurrentConfigId(configList[0].id);
+            setGameConfigListUtil(configList);
+            setCurrentConfigIdUtil(configList[0].id);
         });
     }
 
     render () {
-        const { configList, currentConfigId, setCurrentConfigId } = this.props;
+        const { configList, currentConfigId } = this.props;
         return (
             <div className="game-container">
                 {/* 游戏模式选择区域 */}
@@ -58,7 +42,7 @@ class Game extends PureComponent<GameProps> {
                                         name="mode"
                                         value={config.id}
                                         checked={currentConfigId === config.id}
-                                        onChange={() => setCurrentConfigId(config.id)}
+                                        onChange={() => setCurrentConfigIdUtil(config.id)}
                                     />
                                     {config.name}
                                 </label>
@@ -70,7 +54,7 @@ class Game extends PureComponent<GameProps> {
                 <div className='game-view'>
                     {
                         configList.map((config) => {
-                            return (currentConfigId === config.id) && <Chess key={config.id} {...config.ChessProps} ></Chess>;
+                            return (currentConfigId === config.id) && <Chess configId={config.id} key={config.id} {...config.ChessProps} ></Chess>;
                         })
                     }
                 </div>
@@ -80,4 +64,4 @@ class Game extends PureComponent<GameProps> {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Game);
+export default connect(mapStateToProps)(Game);

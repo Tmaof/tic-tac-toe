@@ -1,3 +1,4 @@
+import { GameConfigId } from '../game/reducer.type';
 import { HistoryList } from './reducer.type';
 
 /** history模块 历史记录的action类型枚举 */
@@ -14,17 +15,20 @@ export enum HistoryActionTypesEnum {
 export type SetHistoryListAction = {
     type: HistoryActionTypesEnum.SET_HISTORY_LIST;
     payload: HistoryList;
+    configId: GameConfigId;
 };
 
 /** 设置当前历史记录的索引的action类型 */
 export type SetCurrentHistoryIndexAction = {
     type: HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX;
     payload: number;
+    configId: GameConfigId;
 };
 
 /** 重置历史记录的action类型 */
 export type ResetHistoryAction = {
     type: HistoryActionTypesEnum.RESET_HISTORY;
+    configId: GameConfigId;
 };
 
 /** 历史记录的action类型 */

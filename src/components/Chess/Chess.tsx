@@ -1,42 +1,43 @@
 import { PureComponent } from 'react';
 import Board from '../Board/Board';
 import { ChessProps } from './Chess.type';
-import { getInitHistoryList } from './utils';
 import { SquaresList } from '../Board/Board.type';
 import { calculateWinner } from '../../utils';
 import { RootState } from '../../store';
-import { setHistoryList, setCurrentHistoryIndex, resetHistory } from '../../store/modules/history/action';
-import { HistoryObj } from '../../store/modules/history/reducer.type';
+import { HistoryInfo, HistoryObj } from '../../store/modules/history/reducer.type';
 import { connect } from 'react-redux';
+import { getInitHistoryInfo, setCurrentHistoryIndexUtil, setHistoryListUtil } from '../../store/modules/history/utils';
 
 /** 映射状态到组件的props */
 const mapStateToProps = (state: RootState) => {
-    return {
-        historyList: state.history.historyList,
-        currentHistoryIndex: state.history.currentHistoryIndex,
-    };
+    return { historyInfoMap: state.history };
 };
 
-const mapDispatchToProps = {
-    setHistoryList,
-    setCurrentHistoryIndex,
-    resetHistory,
-};
+type AllChessProps = ChessProps & ReturnType<typeof mapStateToProps>;
 
-type  AllChessProps = ChessProps & ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+type AllChessState = HistoryInfo & {currentHistory:HistoryObj}
 
 /** 棋类游戏组件 */
-class Chess extends PureComponent<AllChessProps> {
-    componentDidMount () {
-        const { rowNum, colNum } = this.props;
-        /** 组件挂载后，初始化历史记录列表 */
-        this.props.setHistoryList(getInitHistoryList(rowNum, colNum));
-        this.props.setCurrentHistoryIndex(0);
+class Chess extends PureComponent<AllChessProps, AllChessState> {
+    constructor (props: AllChessProps) {
+        super(props);
+        // 初始化棋盘历史信息
+        const { historyList, currentHistoryIndex } = getInitHistoryInfo(this.props.rowNum, this.props.colNum);
+        this.state = {
+            historyList,
+            currentHistory: historyList[currentHistoryIndex],
+            currentHistoryIndex,
+        };
     }
-
-    componentWillUnmount () {
-        /** 组件卸载时，重置历史列表 */
-        this.props.resetHistory();
+    /** 每次更新时，获取一个派生的state从props */
+    static getDerivedStateFromProps (nextProps: AllChessProps, prevState: AllChessState) {
+        /** 各个棋盘历史信息的Map */
+        const { historyInfoMap, configId } = nextProps;
+        /** 用当前棋盘的id去获取当前棋盘的历史信息 */
+        const history = historyInfoMap.get(configId);
+        if (!history) return prevState; // 初次渲染时historyInfoMap还没有该棋盘的历史信息
+        const { historyList, currentHistoryIndex } = history;
+        return { ...prevState, ...history, currentHistory: historyList[currentHistoryIndex] };
     }
 
     /**
@@ -47,8 +48,8 @@ class Chess extends PureComponent<AllChessProps> {
      * @returns
      */
     handlePlay = (nextSquares: SquaresList, posX:number, posY:number) => {
-        const { historyList, currentHistoryIndex, successNeedNum, playerInfoList, setHistoryList, setCurrentHistoryIndex } = this.props;
-        const currentHistory = historyList[currentHistoryIndex];
+        const {  successNeedNum, playerInfoList, configId  } = this.props;
+        const { historyList, currentHistoryIndex, currentHistory } = this.state;
         if (currentHistory.gameOver) {
             window.confirm('游戏已经结束了！');
             return;
@@ -65,15 +66,15 @@ class Chess extends PureComponent<AllChessProps> {
         const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver: winner !== null };
         // 将新的历史状态添加到历史列表
         const newHistoryList = [...historyList.slice(0, currentHistoryIndex + 1), newHistory];
-        setHistoryList(newHistoryList);
+        setHistoryListUtil(configId, newHistoryList);
         // 更新棋盘记录的位置：更新索引后currentHistory会自动更新
-        setCurrentHistoryIndex(newHistoryList.length - 1);
+        setCurrentHistoryIndexUtil(configId, newHistoryList.length - 1);
     };
 
 
     render () {
-        const { historyList, currentHistoryIndex, setCurrentHistoryIndex, playerInfoList } = this.props;
-        const currentHistory = historyList[currentHistoryIndex];
+        const { playerInfoList, configId  } = this.props;
+        const { historyList, currentHistory } = this.state;
 
         return (
             <div>
@@ -95,7 +96,7 @@ class Chess extends PureComponent<AllChessProps> {
                             const description = index > 0 ? `回到状态 #${index}` : '回到游戏开始';
                             return (
                                 <li key={index}>
-                                    <button onClick={() => setCurrentHistoryIndex(index)}>{description}</button>
+                                    <button onClick={() => setCurrentHistoryIndexUtil(configId, index)}>{description}</button>
                                 </li>
                             );
                         })
@@ -107,4 +108,5 @@ class Chess extends PureComponent<AllChessProps> {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chess);
+export default connect(mapStateToProps)(Chess);
+
