@@ -210,7 +210,7 @@ console.log(myFn3.name)
 
 ```
 
-#### 使用`.d.ts`文件声明类型，eslint 不检查？
+#### 使用 `.d.ts`文件声明类型，eslint 不检查？
 
 ```tsx
 // src\components\Board\Board.type.ts
@@ -393,7 +393,7 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
 };
 ```
 
-这样我们的`handlePlay`函数就不存在 let 声明变量，之后赋值的问题了：
+这样我们的 `handlePlay`函数就不存在 let 声明变量，之后赋值的问题了：
 
 ```tsx
     /**
@@ -422,7 +422,6 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
         setCurrentMove(newHistoryList.length - 1);
     };
 ```
-
 
 ### 优化 3
 
@@ -543,4 +542,99 @@ class Game extends PureComponent<GameProps> {
 
 
 export default connect(mapStateToProps)(Game);
+```
+
+
+#### 不要直接修改 state
+
+**old：**
+
+```tsx
+import { GameConfigId } from '../game/reducer.type';
+import { HistoryAction, HistoryActionTypesEnum } from './action.type';
+import { HistoryInfo, HistoryState } from './reducer.type';
+
+export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>();
+
+export const historyReducer = (state: HistoryState = initState, action: HistoryAction): HistoryState => {
+    switch (action.type) {
+        case HistoryActionTypesEnum.SET_HISTORY_LIST:
+            if (state.get(action.configId) !== undefined) {
+                state.set(action.configId, { ...state.get(action.configId)!, historyList: action.payload });
+            } else {
+                state.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
+            }
+            return new Map(state);
+        case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
+            if (state.get(action.configId) !== undefined) {
+                state.set(action.configId, { ...state.get(action.configId)!, currentHistoryIndex: action.payload });
+            }
+            return new Map(state);
+        case HistoryActionTypesEnum.RESET_HISTORY:
+            state.delete(action.configId);
+            return new Map(state);
+        default:
+            return state;
+    }
+};
+```
+
+**new：**
+
+```tsx
+import { GameConfigId } from '../game/reducer.type';
+import { HistoryAction, HistoryActionTypesEnum } from './action.type';
+import { HistoryInfo, HistoryState } from './reducer.type';
+
+export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>();
+
+export const historyReducer = (state: HistoryState = initState, action: HistoryAction): HistoryState => {
+    const newMap = new Map(state);
+    const historyInfo = newMap.get(action.configId);
+    switch (action.type) {
+        case HistoryActionTypesEnum.SET_HISTORY_LIST:
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, historyList: action.payload });
+            } else {
+                newMap.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
+            }
+            return newMap;
+        case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, currentHistoryIndex: action.payload });
+            }
+            return newMap;
+        case HistoryActionTypesEnum.RESET_HISTORY:
+            newMap.delete(action.configId);
+            return newMap;
+        default:
+            return state;
+    }
+};
+```
+
+#### 使用 await - async
+
+**old：**
+
+```tsx
+
+    /** 组件挂载后，获取游戏配置列表 */
+    componentDidMount () {
+        getGameConfigListAPI().then((configList) => {
+            setGameConfigListUtil(configList);
+            setCurrentConfigIdUtil(configList[0].id);
+        });
+    }
+```
+
+**new：**
+
+```tsx
+    /** 组件挂载后，获取游戏配置列表 */
+    async componentDidMount () {
+        const configList = await getGameConfigListAPI();
+        setGameConfigListUtil(configList);
+        setCurrentConfigIdUtil(configList[0].id);
+    }
 ```
