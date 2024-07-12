@@ -13,10 +13,11 @@ const Game: React.FC = () => {
     const currentConfigId = useAppSelector((state) => state.game.currentConfigId);
     /** 组件挂载后，获取游戏配置列表 */
     useEffect(() => {
-        getGameConfigListAPI().then((configList) => {
+        (async () => {
+            const configList = await getGameConfigListAPI();
             dispatch(setGameConfigList(configList));
             dispatch(setCurrentConfigId(configList[0].id));
-        },);
+        })();
     }, []);
 
     return (
