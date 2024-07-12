@@ -1,5 +1,6 @@
 import { SquaresList } from '../../../components/Board/Board.type';
 import { PosInfo } from '../../../utils/index.type';
+import { GameConfigId } from '../game/reducer.type';
 
 /** 历史记录对象的类型 */
 export type HistoryObj = {
@@ -16,10 +17,12 @@ export type HistoryObj = {
 /** 历史记录列表的类型 */
 export type HistoryList = HistoryObj[]
 
-/** 历史模块 状态对象类型 */
-export type HistoryState = {
+export type HistoryInfo = {
     /** 历史记录列表 */
     historyList: HistoryList;
     /** 当前历史记录的索引 */
     currentHistoryIndex: number;
 }
+
+/** 历史模块 状态对象类型 */
+export type HistoryState = Map<GameConfigId, HistoryInfo>

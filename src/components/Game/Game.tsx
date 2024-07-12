@@ -44,7 +44,7 @@ const Game: React.FC = () => {
             <div className='game-view'>
                 {
                     configList.map((config) => {
-                        return (currentConfigId === config.id) && <Chess key={config.id} {...config.ChessProps} ></Chess>;
+                        return (currentConfigId === config.id) && <Chess key={config.id} configId={config.id} {...config.ChessProps} ></Chess>;
                     })
                 }
             </div>

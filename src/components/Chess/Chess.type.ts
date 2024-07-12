@@ -1,3 +1,5 @@
+import { GameConfigId } from '../../store/modules/game/reducer.type';
+
 /** 玩家信息 */
 export type PlayerInfo = {
     /** 棋子的样式 */
@@ -19,4 +21,6 @@ export type ChessProps = {
     colNum: number;
     /** 要求获胜时在一条线上的最少棋子数量 */
     successNeedNum: number;
+    /** 当前棋盘的id */
+    configId: GameConfigId;
 }

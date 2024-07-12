@@ -1,40 +1,28 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import Board from '../Board/Board';
 import { ChessProps } from './Chess.type';
-import { getInitHistoryList } from './utils';
 import { SquaresList } from '../Board/Board.type';
 import { calculateWinner } from '../../utils';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { setHistoryList, setCurrentHistoryIndex, resetHistory } from '../../store/modules/history/action';
+import { setHistoryList, setCurrentHistoryIndex } from '../../store/modules/history/action';
 import { HistoryObj } from '../../store/modules/history/reducer.type';
+import { getInitHistoryInfo } from '../../store/modules/history/utils';
 
 /** 棋类游戏组件 */
 const Chess: React.FC<ChessProps> = (props) => {
     const dispatch = useAppDispatch();
-    /** 棋盘状态历史记录的列表 */
-    const historyList = useAppSelector(state => state.history.historyList);
-    /** 当前棋盘记录的位置 */
-    const currentHistoryIndex = useAppSelector(state => state.history.currentHistoryIndex);
-    /** 组件挂载后，初始化历史记录列表 */
-    useEffect(() => {
-        dispatch(setHistoryList(getInitHistoryList(props.rowNum, props.colNum)));
-        dispatch(setCurrentHistoryIndex(0));
-        /** 组件卸载时，重置历史列表 */
-        return () => {
-            dispatch(resetHistory());
-        };
-    }, []);
-    /** 计算当前的棋盘状态 */
-    const currentHistory = useMemo(() => {
-        return historyList[currentHistoryIndex];
-    }, [currentHistoryIndex, historyList]);
+    /** 各个棋盘历史信息的Map */
+    const historyInfoMap = useAppSelector(state => state.history);
+    /** 用当前棋盘的id去获取当前棋盘的历史信息 */
+    const { historyList, currentHistoryIndex } = historyInfoMap.get(props.configId) || getInitHistoryInfo(props.rowNum, props.colNum);
+    const currentHistory = historyList[currentHistoryIndex];
     /**
     * 处理时间旅行
     * @param index 历史记录的索引
     */
     const handleTimeTrave =  (index: number) => {
         // 更新当前历史记录的索引
-        dispatch(setCurrentHistoryIndex(index));
+        dispatch(setCurrentHistoryIndex(props.configId, index));
     };
     /** 计算时间旅行的每一项元素 */
     const timeTravelItemList = useMemo(() => {
@@ -69,9 +57,9 @@ const Chess: React.FC<ChessProps> = (props) => {
         const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver: winner !== null };
         // 将新的历史状态添加到历史列表
         const newHistoryList = [...historyList.slice(0, currentHistoryIndex + 1), newHistory];
-        dispatch(setHistoryList(newHistoryList));
+        dispatch(setHistoryList(props.configId, newHistoryList));
         // 更新棋盘记录的位置：更新索引后currentHistory会自动更新
-        dispatch(setCurrentHistoryIndex(newHistoryList.length - 1));
+        dispatch(setCurrentHistoryIndex(props.configId, newHistoryList.length - 1));
     };
 
     /** 渲染组件 */
