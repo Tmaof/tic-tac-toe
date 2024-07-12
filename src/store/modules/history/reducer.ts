@@ -5,22 +5,24 @@ import { HistoryInfo, HistoryState } from './reducer.type';
 export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>();
 
 export const historyReducer = (state: HistoryState = initState, action: HistoryAction): HistoryState => {
+    const newMap = new Map(state);
+    const historyInfo = newMap.get(action.configId);
     switch (action.type) {
         case HistoryActionTypesEnum.SET_HISTORY_LIST:
-            if (state.get(action.configId) !== undefined) {
-                state.set(action.configId, { ...state.get(action.configId)!, historyList: action.payload });
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, historyList: action.payload });
             } else {
-                state.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
+                newMap.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
             }
-            return new Map(state);
+            return newMap;
         case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
-            if (state.get(action.configId) !== undefined) {
-                state.set(action.configId, { ...state.get(action.configId)!, currentHistoryIndex: action.payload });
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, currentHistoryIndex: action.payload });
             }
-            return new Map(state);
+            return newMap;
         case HistoryActionTypesEnum.RESET_HISTORY:
-            state.delete(action.configId);
-            return new Map(state);
+            newMap.delete(action.configId);
+            return newMap;
         default:
             return state;
     }

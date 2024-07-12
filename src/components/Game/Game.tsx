@@ -20,11 +20,10 @@ type GameProps = ReturnType<typeof mapStateToProps>;
 /** 游戏组件定义 */
 class Game extends PureComponent<GameProps> {
     /** 组件挂载后，获取游戏配置列表 */
-    componentDidMount () {
-        getGameConfigListAPI().then((configList) => {
-            setGameConfigListUtil(configList);
-            setCurrentConfigIdUtil(configList[0].id);
-        });
+    async componentDidMount () {
+        const configList = await getGameConfigListAPI();
+        setGameConfigListUtil(configList);
+        setCurrentConfigIdUtil(configList[0].id);
     }
 
     render () {
