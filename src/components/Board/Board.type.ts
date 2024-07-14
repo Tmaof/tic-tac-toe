@@ -9,16 +9,13 @@ export type BoardProps = {
     latticeWidth?: string;
     /** 所有格子的一个二维列表，每个元素可以是字符串或null */
     squares: SquaresList;
-    /** 下一个棋子的样式 */
-    nextFlag: string;
     /**
      * 完成一次下棋后触发的回调函数
-     * @param squares 棋盘格子二维列表
-     * @param posX 点击的棋子横坐标(列位置)
      * @param posY 点击的棋子纵坐标(行位置)
+     * @param posX 点击的棋子横坐标(列位置)
      * @returns
      */
-    onPlay: (squares: SquaresList, posX:number, posY:number) => void;
+    onPlay: (posY: number, posX: number,) => void;
     /** 当游戏结束时，在同一条线上的点的坐标的一个列表 */
-    onLinePointPosList:PosInfo[];
+    onLinePointPosList: PosInfo[];
 }

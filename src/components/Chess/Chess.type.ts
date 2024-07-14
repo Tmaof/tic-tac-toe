@@ -8,13 +8,12 @@ export type PlayerInfo = {
     name: string;
     /** 玩家的id */
     id: number;
+    /** 是否是AI */
+    isAI: boolean;
 }
-
 
 /** 棋类组件的Props的类型 */
 export type ChessProps = {
-    /** 不同棋手信息的列表，支持两个以上的多玩家 */
-    playerInfoList: PlayerInfo[];
     /** 棋盘的行数 */
     rowNum: number;
     /** 棋盘的列数 */
@@ -23,4 +22,8 @@ export type ChessProps = {
     successNeedNum: number;
     /** 当前棋盘的id */
     configId: GameConfigId;
+    /** 不同棋手信息的列表，支持两个以上的多玩家，AI对抗只支持两个 */
+    playerInfoList: PlayerInfo[];
+    /** 是否是AI模式 */
+    isAIMode: boolean;
 }

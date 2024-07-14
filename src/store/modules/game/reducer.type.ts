@@ -1,5 +1,6 @@
 import { ChessProps } from '../../../components/Chess/Chess.type';
 
+
 /** 游戏模式配置对象的类型 */
 export type GameConfig = {
     /** 游戏模式ID */
