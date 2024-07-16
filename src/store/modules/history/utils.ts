@@ -9,7 +9,7 @@ import { GameConfigId } from '../game/reducer.type';
  * @param colNum 棋盘列数
  * @returns 历史数据列表
  */
-export const getInitHistoryList = (rowNum:number, colNum:number): HistoryList => {
+export const getInitHistoryList = (rowNum: number, colNum: number): HistoryList => {
     const squares = [];
     for (let index = 0; index < rowNum; index++) {
         squares.push(Array(colNum).fill(null));
@@ -17,8 +17,9 @@ export const getInitHistoryList = (rowNum:number, colNum:number): HistoryList =>
     return [{
         squares,
         nextPlayerIndex: 0,
-        gameOver: false,
+        status: 'playing',
         onLinePointPosList: [],
+        winner: null,
     }];
 };
 
@@ -28,7 +29,7 @@ export const getInitHistoryList = (rowNum:number, colNum:number): HistoryList =>
  * @param colNum 棋盘列数
  * @returns
  */
-export const getInitHistoryInfo = (rowNum:number, colNum:number): HistoryInfo => {
+export const getInitHistoryInfo = (rowNum: number, colNum: number): HistoryInfo => {
     return {
         historyList: getInitHistoryList(rowNum, colNum),
         currentHistoryIndex: 0,

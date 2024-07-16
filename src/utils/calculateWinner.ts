@@ -1,5 +1,21 @@
 import { SquaresList } from '../components/Board/Board.type';
+import { GameStatus } from '../store/modules/history/reducer.type';
 import { PosInfo } from './index.type';
+
+type ResType = {
+    flag: string | null;
+    onLinePointPosList: PosInfo[];
+    status: GameStatus;
+}
+
+/**
+ * 检查棋盘是否已满
+ * @param squares 棋盘二维数组
+ * @returns
+ */
+export const isBoardFull = (squares: SquaresList) => {
+    return squares.flat().every(cell => cell);
+};
 
 /**
  * 计算胜利者。
@@ -12,7 +28,7 @@ import { PosInfo } from './index.type';
  * @param posY 棋子纵坐标(行位置)
  * @returns 获胜者的标记（字符串）和在同一条线上的点的坐标
  */
-export const calculateWinner = (squares: SquaresList, successNeedNum: number, pos: PosInfo) => {
+export const calculateWinner = (squares: SquaresList, successNeedNum: number, pos: PosInfo): ResType => {
     const { posX, posY } = pos;
     /** 保存有玩家胜利时，在同一条线上的点的坐标 */
     let onLinePointPosList: PosInfo[] = [];
@@ -68,13 +84,15 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     // 检查所有方向：调用checkDirection四次，分别检查水平、垂直、正对角线和反对角线方向。
     if (checkDirection(1, 0) || checkDirection(0, 1) || checkDirection(1, 1) || checkDirection(-1, 1)) {
         return {
-            winner: squares[posY][posX],
+            flag: squares[posY][posX],
             onLinePointPosList,
+            status: 'success',
         };
     }
     // 如果没有获胜者
     return {
-        winner: null,
+        flag: null,
         onLinePointPosList: [],
+        status: isBoardFull(squares) ? 'draw' : 'playing',
     };
 };

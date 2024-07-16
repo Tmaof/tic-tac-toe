@@ -1,6 +1,10 @@
 import { SquaresList } from '../../../components/Board/Board.type';
+import { PlayerInfo } from '../../../components/Chess/Chess.type';
 import { PosInfo } from '../../../utils/index.type';
 import { GameConfigId } from '../game/reducer.type';
+
+/** 游戏状态：游戏成功、游戏进行中、平局 */
+export type GameStatus = 'success' | 'playing' | 'draw'
 
 /** 历史记录对象的类型 */
 export type HistoryObj = {
@@ -10,8 +14,10 @@ export type HistoryObj = {
     nextPlayerIndex: number;
     /** 当游戏结束时，在同一条线上的点的坐标的一个列表 */
     onLinePointPosList: PosInfo[];
-    /** 该状态记录下游戏是否结束 */
-    gameOver: boolean;
+    /** 游戏状态：游戏成功、游戏进行中、平局 */
+    status: GameStatus;
+    /** 胜利者信息 */
+    winner: PlayerInfo | null;
 }
 
 /** 历史记录列表的类型 */

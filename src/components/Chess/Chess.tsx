@@ -1,11 +1,13 @@
 import { PureComponent } from 'react';
 import Board from '../Board/Board';
-import { ChessProps, PlayerInfo } from './Chess.type';
+import { ChessProps, ChessState } from './Chess.type';
 import { calculateNextMove, calculateWinner } from '../../utils';
 import { RootState } from '../../store';
 import { HistoryInfo, HistoryObj } from '../../store/modules/history/reducer.type';
 import { connect } from 'react-redux';
 import { getInitHistoryInfo, setCurrentHistoryIndexUtil, setHistoryListUtil } from '../../store/modules/history/utils';
+import { PosInfo } from '../../utils/index.type';
+import { getPlayerIndex, getWinnerInfo } from './utils';
 
 /** 映射状态到组件的props */
 const mapStateToProps = (state: RootState) => {
@@ -14,40 +16,28 @@ const mapStateToProps = (state: RootState) => {
 
 type AllChessProps = ChessProps & ReturnType<typeof mapStateToProps>;
 
-type AllChessState = HistoryInfo & {currentHistory:HistoryObj}
-
-/**
- * 查找AI玩家或者人类玩家在玩家列表中的索引
- * @param playerList 玩家列表
- * @param isAI 是否是查找AI玩家
- * @returns
- */
-const getPlayerIndex = (playerList: PlayerInfo[], isAI:boolean) => {
-    return playerList.findIndex(player => player.isAI === isAI);
-};
+type AllChessState = HistoryInfo & ChessState
 
 /** 棋类游戏组件 */
 class Chess extends PureComponent<AllChessProps, AllChessState> {
+    /** 当前AI是否正在下棋 */
+    isAIplaying = false;
     constructor (props: AllChessProps) {
         super(props);
+        const { rowNum, colNum, playerInfoList, isAIMode } = this.props;
         // 初始化棋盘历史信息
-        const { historyList, currentHistoryIndex } = getInitHistoryInfo(this.props.rowNum, this.props.colNum);
+        const { historyList, currentHistoryIndex } = getInitHistoryInfo(rowNum, colNum);
         const currentHistory = historyList[currentHistoryIndex];
-        const isAIFirst = Math.random() > 0.5 && this.props.isAIMode;
-        if (isAIFirst) {
-            // 如果是AI先手，那么它查找它在玩家列表中的索引，并设置为下一个玩家的索引
-            currentHistory.nextPlayerIndex = getPlayerIndex(this.props.playerInfoList, true);
-        }
+        // AI是否是先手
+        const isAIFirst = isAIMode && Math.random() > 0.5;
+        if (isAIFirst) currentHistory.nextPlayerIndex = getPlayerIndex(playerInfoList, true);
         this.state = {
             historyList,
             currentHistory,
             currentHistoryIndex,
         };
-        if (isAIFirst) {
-            // AI先手，那么AI先下棋
-            this.aIPlaysChess();
-        }
     }
+
     /** 每次更新时，获取一个派生的state从props */
     static getDerivedStateFromProps (nextProps: AllChessProps, prevState: AllChessState) {
         /** 各个棋盘历史信息的Map */
@@ -56,82 +46,130 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
         const history = historyInfoMap.get(configId);
         if (!history) return prevState; // 初次渲染时historyInfoMap还没有该棋盘的历史信息
         const { historyList, currentHistoryIndex } = history;
-        return { ...prevState, ...history, currentHistory: historyList[currentHistoryIndex] };
+        const currentHistory = historyList[currentHistoryIndex];
+        return { ...prevState, ...history, currentHistory };
     }
 
-    /** 组件更新 */
-    componentDidUpdate (): void {
-        // 如果是AI模式且下一位棋手是AI，则需要AI下棋
-        this.aIPlaysChess();
+    /** 组件挂载 */
+    componentDidMount () {
+        const { playerInfoList } = this.props;
+        const { currentHistory } = this.state;
+        const player = playerInfoList[currentHistory.nextPlayerIndex];
+        // AI先手，那么AI先下棋
+        if (player.isAI) this.handleAIPlay(currentHistory);
     }
 
     /**
      * 处理下棋的函数
-     * @param posY 当次下棋位置的纵坐标
-     * @param posX 当次下棋位置的横坐标
-     * @param isAICall 是否是AI调用
-     * @returns
+     * @param pos 当前棋子的位置
+     * @returns 成功时返回最新的历史信息，失败时返回undefined
      */
-    handlePlay = (posY:number, posX:number, isAICall = false) => {
-        const {  successNeedNum, playerInfoList, configId } = this.props;
+    handlePlay = (pos: PosInfo) => {
+        const { successNeedNum, playerInfoList, configId } = this.props;
         const { historyList, currentHistoryIndex, currentHistory } = this.state;
         const player = playerInfoList[currentHistory.nextPlayerIndex];
+        const { posY, posX } = pos;
 
         if (currentHistory.squares[posY][posX]) return; // 如果格子有值了，则无需操作
-        if (player.isAI && !isAICall) return; // 如果当前是AI下棋，则不允许玩家进行下棋操作
-        if (currentHistory.gameOver) return; // 游戏已经结束
+        if (currentHistory.status !== 'playing') return; // 游戏已经结束
 
         const nextSquares = JSON.parse(JSON.stringify(currentHistory.squares)); // 复制当前棋盘状态，注意：由于是二维数组，需要深拷贝，否则时间回溯将出现bug
         nextSquares[posY][posX] = player.flag; // 在点击位置放置棋子
 
         // 下完一棋后需要判断是否存在胜利者
-        const { winner, onLinePointPosList  } = calculateWinner(nextSquares, successNeedNum, { posY, posX });
-        if (winner) {
-            // 存在胜利者，游戏结束
-            window.confirm(`棋手${winner}胜利了！`);
-        }
+        const { flag, onLinePointPosList, status } = calculateWinner(nextSquares, successNeedNum, pos);
+        const winner = getWinnerInfo(playerInfoList, flag);
 
         /** 新的下一个棋手的索引 */
         const nextPlayerIndex = (currentHistory.nextPlayerIndex + 1) % playerInfoList.length;
         /** 新的历史记录对象 */
-        const newHistory: HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver: winner !== null };
+        const newHistory: HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, status, winner };
         // 将新的历史状态添加到历史列表
         const newHistoryList = [...historyList.slice(0, currentHistoryIndex + 1), newHistory];
         setHistoryListUtil(configId, newHistoryList);
         // 更新棋盘记录的位置：更新索引后currentHistory会自动更新
         setCurrentHistoryIndexUtil(configId, newHistoryList.length - 1);
+
+        return newHistory;
     };
 
-    /** AI下棋 */
-    aIPlaysChess = () => {
+    /**
+     * 处理玩家点击下棋的函数
+     * @param pos 当前棋子的位置
+     * @returns
+     */
+    handlePlayerPlay = (pos: PosInfo) => {
+        const { playerInfoList } = this.props;
+        const { currentHistory } = this.state;
+        const player = playerInfoList[currentHistory.nextPlayerIndex];
+        if (player.isAI) return; // 如果当前是AI下棋，则不允许玩家进行下棋操作
+        // 玩家下棋
+        const newHistory = this.handlePlay(pos);
+        // 当玩家下棋后需要AI继续下棋，AI下棋后不会调用该方法（保证不会发生死循环）
+        if (newHistory && newHistory.status === 'playing') this.handleAIPlay(newHistory);
+    };
+
+    /**
+     * AI下棋
+     * @param currentHistory 当前最新的棋盘记录，例如玩家下完棋后调用该方法时需要传入最新的棋盘记录（例如包含最新的棋盘二维列表squares），AI才能根据最新的棋盘记录进行正确下棋
+     * @returns
+     */
+    handleAIPlay = (currentHistory: HistoryObj) => {
         if (!this.props.isAIMode) return;
         const { playerInfoList, successNeedNum } = this.props;
-        const { currentHistory } = this.state;
         const player = playerInfoList[currentHistory.nextPlayerIndex];
         if (!player.isAI) return;
 
         // 调用计算下棋位置的方法获取位置，并下棋
         const opponentPlayer = playerInfoList[getPlayerIndex(playerInfoList, false)];
         const { posY, posX } = calculateNextMove(currentHistory.squares, player.flag, opponentPlayer.flag, successNeedNum);
-        if (posY < 0 || posX < 0) return;
+        if (posY < 0 || posX < 0) return; // 棋盘已满
+        this.isAIplaying = true; // 设置AI正在下棋中，不能进行时间回溯
         setTimeout(() => {
-            this.handlePlay(posY, posX, true);
+            this.handlePlay({ posY, posX });
+            this.isAIplaying = false; // AI下棋完成
         }, 300);
+    };
+
+    /** 处理时间旅行 */
+    handleTimeTravel = (configId:number, index:number) => {
+        if (this.isAIplaying) return window.confirm('请等待AI下棋完成！');// AI正在下棋中，不能进行时间回溯
+        const history = this.state.historyList[index];
+        const player = this.props.playerInfoList[history.nextPlayerIndex];
+        if (player.isAI) return window.confirm('只能回到自己的状态');
+        setCurrentHistoryIndexUtil(configId, index);
+    };
+
+    /** 获取游戏状态的文本 */
+    getGameStatusText = () => {
+        const { playerInfoList } = this.props;
+        const { currentHistory } = this.state;
+        const { status, winner } = currentHistory;
+        const player = playerInfoList[currentHistory.nextPlayerIndex];
+        switch (status) {
+            case 'playing':
+                return `🎮游戏进行中...\n👤下一位棋手是：${player.name}（${player.flag}）`;
+            case 'success':
+                return `🏆【${winner?.name}】胜利！`;
+            case 'draw':
+                return '⚖︎平局';
+            default:
+                return '未知状态';
+        }
     };
 
     render () {
         const { playerInfoList, configId  } = this.props;
         const { historyList, currentHistory } = this.state;
-        const player = playerInfoList[currentHistory.nextPlayerIndex];
 
         return (
             <div>
-                {/* 显示当前下棋的棋手 */}
-                <div>下一位棋手是：{`${player.name}（${player.flag}）`}</div>
+                {/* 显示比赛状态 */}
+                <div style={{ whiteSpace: 'pre' }}>{this.getGameStatusText()}</div>
                 {/* 渲染棋盘组件 */}
                 <Board
                     squares={currentHistory.squares}
-                    onPlay={this.handlePlay}
+                    onPlay={this.handlePlayerPlay}
                     onLinePointPosList={currentHistory.onLinePointPosList}
                 />
                 {/* 时间旅行 */}
@@ -140,10 +178,10 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
                     {/* 计算时间旅行的每一项元素 */}
                     {
                         historyList.map((history, index) => {
-                            const description = index > 0 ? `回到状态 #${index}-${playerInfoList[history.nextPlayerIndex].name}` : '回到游戏开始';
+                            const description = `回到状态 #${index}-${playerInfoList[history.nextPlayerIndex].name}`;
                             return (
                                 <li key={index}>
-                                    <button onClick={() => setCurrentHistoryIndexUtil(configId, index)}>{description}</button>
+                                    <button onClick={() => this.handleTimeTravel(configId, index)}>{description}</button>
                                 </li>
                             );
                         })
@@ -156,4 +194,3 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
 
 
 export default connect(mapStateToProps)(Chess);
-

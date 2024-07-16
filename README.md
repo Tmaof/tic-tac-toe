@@ -5,7 +5,7 @@
 下棋游戏
 实现一个基本的井字棋游戏，要求如下：
 
-1. 游戏可配置，可以切换为五子棋（5 子），并且棋子样式要从"○"、"X"变为五子棋的黑白棋子
+1. 游戏可配置，可以切换为五子棋（5子），并且棋子样式要从"○"、"X"变为五子棋的黑白棋子
 2. 记录每一步的执行，可以回退到任意一步
 3. 合理拆分组件
 4. 使用项目统一 Eslint 规则（npm 全局安装 ezeslint 包，然后在项目目录下直接执行 ezeslint ，选择对应选项即可），且提交的代码不允许出现 Lint 规则报错（含警告）或者 TS 检查报错
@@ -29,18 +29,18 @@
 
 1. 新建一个分支，使用 Class 组件重构当前应用。新建的分支名为 class。（其他要求保持不变）-看不到前面的流程了
 2. 分别在 hooks 和 class 的实现方式中，使用 [react-redux](https://react-redux.js.org/)来管理数据。管理的数据可以包含所有数据，最低要求要包含"历史记录"的数据
-3. 最晚 2 个工作日完成
+3. 最晚2个工作日完成
 
 ### 第三关
 
 厉害厉害，又闯过一关?
 这次可没那么简单咯，请接招：
-在现有的基础上，增加和玩家对抗的 AI（仅实现井字棋即可），要求如下：
+在现有的基础上，增加和玩家对抗的AI（仅实现井字棋即可），要求如下：
 
 1. AI 如果先手，则需要尽可能赢，不能输
 2. AI 如果后手，则需要保证不输 ，并且在可能的情况下赢
 3. 在原本的 class 组件分支实现即可
-4. 最长开发时间：2 天
+4. 最长开发时间：2天
 
 这次的题目是不是更有意思了？注意审清题意以及做好测试哦，防止提交的 AI 是个"智障"~
 
@@ -77,9 +77,9 @@ old：
 const selectList = configList.map((config, index) => {
   return {
     name: config.name,
-    configIndex: index
-  }
-})
+    configIndex: index,
+  };
+});
 
 // selectList.map(({ name, configIndex }) => {
 ```
@@ -95,6 +95,7 @@ configList.map((config, index) => {
 old：
 
 ```tsx
+
 /**
  * 创建游戏配置对象
  *
@@ -105,83 +106,47 @@ old：
  * @param successNeedNum 要求获胜时在一条线上的最少棋子数量
  * @returns 返回游戏配置对象
  */
-const createGameConfig = function createGameConfig(
-  name: GameConfig['name'],
-  playerFlags: ChessProps['playerFlags'],
-  rowNum: ChessProps['rowNum'],
-  colNum: ChessProps['colNum'],
-  successNeedNum: ChessProps['successNeedNum']
-): GameConfig {
-  return {
-    name,
-    ChessProps: {
-      playerFlags,
-      rowNum,
-      colNum,
-      successNeedNum
-    }
-  }
-}
+const createGameConfig = function createGameConfig (name: GameConfig['name'], playerFlags:ChessProps['playerFlags'], rowNum:ChessProps['rowNum'], colNum:ChessProps['colNum'], successNeedNum:ChessProps['successNeedNum']): GameConfig {
+    return {
+        name,
+        ChessProps: {
+            playerFlags,
+            rowNum,
+            colNum,
+            successNeedNum,
+        },
+    };
+};
 
 /**
  * 获取游戏配置列表
  */
-export const getGameConfigList = function getGameConfigList(): GameConfig[] {
-  return [
-    createGameConfig('井字棋', ['❌', '🔘'], 3, 3, 3),
-    createGameConfig('五子棋（15*15）', ['⚫', '⚪'], 15, 15, 5),
-    createGameConfig('五子棋（15*25）', ['⚫', '⚪'], 15, 25, 5),
-    createGameConfig('七子棋（3个玩家）', ['🟢', '🟣', '🔵'], 20, 20, 7)
-  ]
-}
+export const getGameConfigList = function getGameConfigList (): GameConfig[] {
+    return [
+        createGameConfig('井字棋', ['❌', '🔘'], 3, 3,  3),
+        createGameConfig('五子棋（15*15）', ['⚫', '⚪'], 15, 15,  5),
+        createGameConfig('五子棋（15*25）', ['⚫', '⚪'], 15, 25,  5),
+        createGameConfig('七子棋（3个玩家）', ['🟢', '🟣', '🔵'], 20, 20,  7),
+    ];
+};
 ```
 
 new：
 
 ```tsx
+
 /**
  * 获取游戏配置列表
  */
-export const getGameConfigList = function getGameConfigList(): GameConfig[] {
-  return [
-    {
-      name: '井字棋',
-      ChessProps: {
-        playerFlags: ['❌', '🔘'],
-        rowNum: 3,
-        colNum: 3,
-        successNeedNum: 3
-      }
-    },
-    {
-      name: '五子棋（15*15）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 15,
-        successNeedNum: 5
-      }
-    },
-    {
-      name: '五子棋（15*25）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 25,
-        successNeedNum: 5
-      }
-    },
-    {
-      name: '七子棋（3个玩家）',
-      ChessProps: {
-        playerFlags: ['🟢', '🟣', '🔵'],
-        rowNum: 20,
-        colNum: 20,
-        successNeedNum: 7
-      }
-    }
-  ]
-}
+export const getGameConfigList = function getGameConfigList (): GameConfig[] {
+    return [
+        { name: '井字棋', ChessProps: { playerFlags: ['❌', '🔘'], rowNum: 3, colNum: 3, successNeedNum: 3 } },
+        { name: '五子棋（15*15）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 15, successNeedNum: 5 } },
+        { name: '五子棋（15*25）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 25, successNeedNum: 5 } },
+        { name: '七子棋（3个玩家）', ChessProps: { playerFlags: ['🟢', '🟣', '🔵'], rowNum: 20, colNum: 20, successNeedNum: 7 } },
+    ];
+};
+
 ```
 
 #### 将多属性的数据抽象为对象，并为对象提供唯一标识
@@ -190,65 +155,25 @@ export const getGameConfigList = function getGameConfigList(): GameConfig[] {
 /**
  * 获取游戏配置列表
  */
-export const getGameConfigList = function getGameConfigList(): GameConfig[] {
-  return [
-    {
-      id: 1,
-      name: '井字棋',
-      ChessProps: {
-        playerFlags: ['❌', '🔘'],
-        rowNum: 3,
-        colNum: 3,
-        successNeedNum: 3
-      }
-    },
-    {
-      id: 2,
-      name: '五子棋（15*15）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 15,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 3,
-      name: '五子棋（15*25）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 25,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 4,
-      name: '七子棋（3个玩家）',
-      ChessProps: {
-        playerFlags: ['🟢', '🟣', '🔵'],
-        rowNum: 20,
-        colNum: 20,
-        successNeedNum: 7
-      }
-    }
-  ]
-}
+export const getGameConfigList = function getGameConfigList (): GameConfig[] {
+    return [
+        { id: 1, name: '井字棋', ChessProps: { playerFlags: ['❌', '🔘'], rowNum: 3, colNum: 3, successNeedNum: 3 } },
+        { id: 2, name: '五子棋（15*15）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 15, successNeedNum: 5 } },
+        { id: 3, name: '五子棋（15*25）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 25, successNeedNum: 5 } },
+        { id: 4, name: '七子棋（3个玩家）', ChessProps: { playerFlags: ['🟢', '🟣', '🔵'], rowNum: 20, colNum: 20, successNeedNum: 7 } },
+    ];
+};
 ```
 
 ```tsx
-{
-  /* 游戏视图区域，根据模式显示不同的游戏组件 */
-}
-;<div className="game-view">
-  {configList.map((config) => {
-    return (
-      currentModeId === config.id && (
-        <Chess key={config.id} {...config.ChessProps}></Chess>
-      )
-    )
-  })}
-</div>
+            {/* 游戏视图区域，根据模式显示不同的游戏组件 */}
+            <div className='game-view'>
+                {
+                    configList.map((config) => {
+                        return (currentModeId === config.id) && <Chess key={config.id} {...config.ChessProps} ></Chess>;
+                    })
+                }
+            </div>
 ```
 
 #### 将棋手和他使用的棋子抽象为一个对象，并给一个 ID
@@ -258,24 +183,25 @@ export const getGameConfigList = function getGameConfigList(): GameConfig[] {
 ```tsx
 /** 玩家信息 */
 export type PlayerInfo = {
-  /** 棋子的样式 */
-  flag: string
-  /** 玩家的名字 */
-  name: string
-  /** 玩家的id */
-  id: number
+    /** 棋子的样式 */
+    flag: string;
+    /** 玩家的名字 */
+    name: string;
+    /** 玩家的id */
+    id: number;
 }
+
 
 /** 棋类组件的Props的类型 */
 export type ChessProps = {
-  /** 不同棋手的棋子样式，支持两个以上的多玩家 */
-  playerFlags: PlayerInfo[]
-  /** 棋盘的行数 */
-  rowNum: number
-  /** 棋盘的列数 */
-  colNum: number
-  /** 要求获胜时在一条线上的最少棋子数量 */
-  successNeedNum: number
+    /** 不同棋手的棋子样式，支持两个以上的多玩家 */
+    playerFlags: PlayerInfo[];
+    /** 棋盘的行数 */
+    rowNum: number;
+    /** 棋盘的列数 */
+    colNum: number;
+    /** 要求获胜时在一条线上的最少棋子数量 */
+    successNeedNum: number;
 }
 ```
 
@@ -287,50 +213,15 @@ old：
 /**
  * 获取游戏配置列表
  */
-export const getGameConfigList = function getGameConfigList(): GameConfig[] {
-  return [
-    {
-      id: 1,
-      name: '井字棋',
-      ChessProps: {
-        playerFlags: ['❌', '🔘'],
-        rowNum: 3,
-        colNum: 3,
-        successNeedNum: 3
-      }
-    },
-    {
-      id: 2,
-      name: '五子棋（15*15）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 15,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 3,
-      name: '五子棋（15*25）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 25,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 4,
-      name: '七子棋（3个玩家）',
-      ChessProps: {
-        playerFlags: ['🟢', '🟣', '🔵'],
-        rowNum: 20,
-        colNum: 20,
-        successNeedNum: 7
-      }
-    }
-  ]
-}
+export const getGameConfigList = function getGameConfigList (): GameConfig[] {
+    return [
+        { id: 1, name: '井字棋', ChessProps: { playerFlags: ['❌', '🔘'], rowNum: 3, colNum: 3, successNeedNum: 3 } },
+        { id: 2, name: '五子棋（15*15）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 15, successNeedNum: 5 } },
+        { id: 3, name: '五子棋（15*25）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 25, successNeedNum: 5 } },
+        { id: 4, name: '七子棋（3个玩家）', ChessProps: { playerFlags: ['🟢', '🟣', '🔵'], rowNum: 20, colNum: 20, successNeedNum: 7 } },
+    ];
+};
+
 ```
 
 new：
@@ -340,49 +231,14 @@ new：
  * 获取游戏配置列表
  */
 export const getGameConfigList = (): GameConfig[] => {
-  return [
-    {
-      id: 1,
-      name: '井字棋',
-      ChessProps: {
-        playerFlags: ['❌', '🔘'],
-        rowNum: 3,
-        colNum: 3,
-        successNeedNum: 3
-      }
-    },
-    {
-      id: 2,
-      name: '五子棋（15*15）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 15,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 3,
-      name: '五子棋（15*25）',
-      ChessProps: {
-        playerFlags: ['⚫', '⚪'],
-        rowNum: 15,
-        colNum: 25,
-        successNeedNum: 5
-      }
-    },
-    {
-      id: 4,
-      name: '七子棋（3个玩家）',
-      ChessProps: {
-        playerFlags: ['🟢', '🟣', '🔵'],
-        rowNum: 20,
-        colNum: 20,
-        successNeedNum: 7
-      }
-    }
-  ]
-}
+    return [
+        { id: 1, name: '井字棋', ChessProps: { playerFlags: ['❌', '🔘'], rowNum: 3, colNum: 3, successNeedNum: 3 } },
+        { id: 2, name: '五子棋（15*15）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 15, successNeedNum: 5 } },
+        { id: 3, name: '五子棋（15*25）', ChessProps: { playerFlags: ['⚫', '⚪'], rowNum: 15, colNum: 25, successNeedNum: 5 } },
+        { id: 4, name: '七子棋（3个玩家）', ChessProps: { playerFlags: ['🟢', '🟣', '🔵'], rowNum: 20, colNum: 20, successNeedNum: 7 } },
+    ];
+};
+
 ```
 
 函数的 name：
@@ -405,16 +261,17 @@ const myFn3 = function test() {
 }
 // test
 console.log(myFn3.name)
+
 ```
 
 #### 使用`.d.ts`文件声明类型，eslint 不检查？
 
 ```tsx
 // src\components\Board\Board.type.ts
-import { PosInfo } from '../../utils/index.type'
+import { PosInfo } from '../../utils/index.type';
 
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
-export type SquaresList = (string | null)[][]
+export type SquaresList = ((string | null)[])[]
 ```
 
 ```tsx
@@ -423,7 +280,7 @@ import { SquaresList } from './Board.type';
 // 运行npm run lint 命令报错了
 ```
 
-运行 npm run lint 命令报错了：
+运行npm run lint 命令报错了：
 
 ```tsx
 > tic-tac-toe@0.0.0 lint
@@ -444,15 +301,15 @@ D:\Code\mycode\tic-tac-toe\src\components\Board\test.d.ts
 // src\store\modules\game\actions.type.d.ts
 
 export type GameConfig = {
-  id: number
-  name: string
-  ChessProps: {
-    playerInfoList: PlayerInfo[]
-    rowNum: number
-    colNum: number
-    successNeedNum: number
-  }
-}
+    id: number;
+    name: string;
+    ChessProps: {
+        playerInfoList: PlayerInfo[];
+        rowNum: number;
+        colNum: number;
+        successNeedNum: number;
+    };
+};
 ```
 
 ![image.png](https://cdn.nlark.com/yuque/0/2024/png/34576819/1720663238626-b855e27c-4951-4c7d-b224-c0bfb3c78719.png#averageHue=%23fdfbfb&clientId=u9afbce02-ae85-4&from=paste&height=486&id=u1f27d28d&originHeight=486&originWidth=1266&originalType=binary&ratio=1&rotation=0&showTitle=false&size=61606&status=done&style=none&taskId=ud82a3cc3-d12c-4979-ac05-0a1e392115e&title=&width=1266)
@@ -466,84 +323,73 @@ export type GameConfig = {
 old：
 
 ```tsx
-/** 计算时间旅行的每一项元素 */
-const timeTravelItemList = useMemo(() => {
-  return historyList.map((_history, index) => {
-    let description
-    if (index > 0) {
-      description = `回到状态 #${index}`
-    } else {
-      description = '回到游戏开始'
-    }
-    return (
-      <li key={index}>
-        <button onClick={() => handleTimeTrave(index)}>{description}</button>
-      </li>
-    )
-  })
-}, [historyList])
+    /** 计算时间旅行的每一项元素 */
+    const timeTravelItemList = useMemo(() => {
+        return historyList.map((_history, index) => {
+            let description;
+            if (index > 0) {
+                description = `回到状态 #${index}`;
+            } else {
+                description = '回到游戏开始';
+            }
+            return (
+                <li key={index}>
+                    <button onClick={() => handleTimeTrave(index)}>{description}</button>
+                </li>
+            );
+        });
+    }, [historyList]);
 ```
 
 new：
 
 ```tsx
-/** 计算时间旅行的每一项元素 */
-const timeTravelItemList = useMemo(() => {
-  return historyList.map((_history, index) => {
-    const description = index > 0 ? `回到状态 #${index}` : '回到游戏开始'
-    return (
-      <li key={index}>
-        <button onClick={() => handleTimeTrave(index)}>{description}</button>
-      </li>
-    )
-  })
-}, [historyList])
+    /** 计算时间旅行的每一项元素 */
+    const timeTravelItemList = useMemo(() => {
+        return historyList.map((_history, index) => {
+            const description = index > 0 ? `回到状态 #${index}` : '回到游戏开始';
+            return (
+                <li key={index}>
+                    <button onClick={() => handleTimeTrave(index)}>{description}</button>
+                </li>
+            );
+        });
+    }, [historyList]);
 ```
 
 old：
 
 ```tsx
-/**
- * 处理下棋的函数
- * @param {SquaresList} nextSquares - 更新后的棋盘状态
- */
-const handlePlay = (nextSquares: SquaresList, posX: number, posY: number) => {
-  if (currentHistory.gameOver) {
-    window.confirm('游戏已经结束了！')
-    return
-  }
-  // 下完一棋后需要判断是否存在胜利者
-  const calculateRes = calculateWinner(
-    nextSquares,
-    props.successNeedNum,
-    posX,
-    posY
-  )
-  let onLinePointPosList
-  let gameOver = false
-  if (calculateRes) {
-    // 存在胜利者，游戏结束
-    const { winner, onLinePointPosList: list } = calculateRes
-    onLinePointPosList = list
-    gameOver = true
-    window.confirm(`棋手${winner}胜利了！`)
-  }
-  /** 新的下一个棋手的棋子的索引 */
-  const nextPlayerIndex =
-    (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length
-  /** 新的历史记录对象 */
-  const newHistory: HistoryObj = {
-    squares: nextSquares,
-    nextPlayerIndex,
-    onLinePointPosList,
-    gameOver
-  }
-  // 将新的历史状态添加到历史列表
-  const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory]
-  setHistoryList(newHistoryList)
-  // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
-  setCurrentMove(newHistoryList.length - 1)
-}
+  /**
+     * 处理下棋的函数
+     * @param {SquaresList} nextSquares - 更新后的棋盘状态
+     */
+    const handlePlay =  (nextSquares: SquaresList, posX:number, posY:number) => {
+        if (currentHistory.gameOver) {
+            window.confirm('游戏已经结束了！');
+            return;
+        }
+        // 下完一棋后需要判断是否存在胜利者
+        const calculateRes = calculateWinner(nextSquares, props.successNeedNum, posX, posY);
+        let onLinePointPosList;
+        let gameOver = false;
+        if (calculateRes) {
+            // 存在胜利者，游戏结束
+            const { winner, onLinePointPosList: list } = calculateRes;
+            onLinePointPosList = list;
+            gameOver = true;
+            window.confirm(`棋手${winner}胜利了！`);
+        }
+        /** 新的下一个棋手的棋子的索引 */
+        const nextPlayerIndex = (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length;
+        /** 新的历史记录对象 */
+        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver };
+        // 将新的历史状态添加到历史列表
+        const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory];
+        setHistoryList(newHistoryList);
+        // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
+        setCurrentMove(newHistoryList.length - 1);
+    };
 ```
 
 new：
@@ -575,7 +421,7 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     let onLinePointPosList:PosInfo[] = [];
 
   。。。
-
+  
     // 检查所有方向：调用checkDirection四次，分别检查水平、垂直、正对角线和反对角线方向。
     if (checkDirection(1, 0) || checkDirection(0, 1) || checkDirection(1, 1) || checkDirection(-1, 1)) {
         return {
@@ -607,7 +453,7 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
     let onLinePointPosList:PosInfo[] = [];
 
   。。。
-
+  
     // 检查所有方向：调用checkDirection四次，分别检查水平、垂直、正对角线和反对角线方向。
     if (checkDirection(1, 0) || checkDirection(0, 1) || checkDirection(1, 1) || checkDirection(-1, 1)) {
         return {
@@ -627,42 +473,31 @@ export const calculateWinner = (squares: SquaresList, successNeedNum: number, po
 这样我们的`handlePlay`函数就不存在 let 声明变量，之后赋值的问题了：
 
 ```tsx
-/**
- * 处理下棋的函数
- * @param {SquaresList} nextSquares - 更新后的棋盘状态
- */
-const handlePlay = (nextSquares: SquaresList, posX: number, posY: number) => {
-  if (currentHistory.gameOver) {
-    window.confirm('游戏已经结束了！')
-    return
-  }
-  // 下完一棋后需要判断是否存在胜利者
-  const { winner, onLinePointPosList } = calculateWinner(
-    nextSquares,
-    props.successNeedNum,
-    posX,
-    posY
-  )
-  if (winner) {
-    // 存在胜利者，游戏结束
-    window.confirm(`棋手${winner}胜利了！`)
-  }
-  /** 新的下一个棋手的棋子的索引 */
-  const nextPlayerIndex =
-    (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length
-  /** 新的历史记录对象 */
-  const newHistory: HistoryObj = {
-    squares: nextSquares,
-    nextPlayerIndex,
-    onLinePointPosList,
-    gameOver: winner !== null
-  }
-  // 将新的历史状态添加到历史列表
-  const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory]
-  setHistoryList(newHistoryList)
-  // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
-  setCurrentMove(newHistoryList.length - 1)
-}
+    /**
+     * 处理下棋的函数
+     * @param {SquaresList} nextSquares - 更新后的棋盘状态
+     */
+    const handlePlay =  (nextSquares: SquaresList, posX:number, posY:number) => {
+        if (currentHistory.gameOver) {
+            window.confirm('游戏已经结束了！');
+            return;
+        }
+        // 下完一棋后需要判断是否存在胜利者
+        const { winner, onLinePointPosList  } = calculateWinner(nextSquares, props.successNeedNum, posX, posY);
+        if (winner) {
+            // 存在胜利者，游戏结束
+            window.confirm(`棋手${winner}胜利了！`);
+        }
+        /** 新的下一个棋手的棋子的索引 */
+        const nextPlayerIndex = (currentHistory.nextPlayerIndex + 1) % props.playerFlags.length;
+        /** 新的历史记录对象 */
+        const newHistory:HistoryObj = { squares: nextSquares, nextPlayerIndex, onLinePointPosList, gameOver: winner !== null };
+        // 将新的历史状态添加到历史列表
+        const newHistoryList = [...historyList.slice(0, currentMove + 1), newHistory];
+        setHistoryList(newHistoryList);
+        // 更新棋盘记录的位置：更新currentMove后currentHistory会自动更新
+        setCurrentMove(newHistoryList.length - 1);
+    };
 ```
 
 ### 优化 3
@@ -724,25 +559,26 @@ new：
 
 ```tsx
 // src\store\modules\game\utils.ts
-import { store } from '../..'
-import { setCurrentConfigId, setGameConfigList } from './actions'
-import { GameConfig, GameConfigId } from './reducer.type'
+import { store } from '../..';
+import { setCurrentConfigId, setGameConfigList } from './actions';
+import { GameConfig, GameConfigId } from './reducer.type';
 
 /**
  * 设置当前使用的游戏配置id(即当前的棋类游戏)
  * @param configId 配置id
  */
-export const setCurrentConfigIdUtil = (configId: GameConfigId) => {
-  store.dispatch(setCurrentConfigId(configId))
-}
+export const setCurrentConfigIdUtil = (configId:GameConfigId) => {
+    store.dispatch(setCurrentConfigId(configId));
+};
 
 /**
  * 设置游戏的配置列表
  * @param gameConfigList 配置列表
  */
 export const setGameConfigListUtil = (gameConfigList: GameConfig[]) => {
-  store.dispatch(setGameConfigList(gameConfigList))
-}
+    store.dispatch(setGameConfigList(gameConfigList));
+};
+
 ```
 
 使用：
@@ -792,91 +628,69 @@ export default connect(mapStateToProps)(Game);
 old：
 
 ```tsx
-import { GameConfigId } from '../game/reducer.type'
-import { HistoryAction, HistoryActionTypesEnum } from './action.type'
-import { HistoryInfo, HistoryState } from './reducer.type'
+import { GameConfigId } from '../game/reducer.type';
+import { HistoryAction, HistoryActionTypesEnum } from './action.type';
+import { HistoryInfo, HistoryState } from './reducer.type';
 
-export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>()
+export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>();
 
-export const historyReducer = (
-  state: HistoryState = initState,
-  action: HistoryAction
-): HistoryState => {
-  switch (action.type) {
-    case HistoryActionTypesEnum.SET_HISTORY_LIST:
-      if (state.get(action.configId) !== undefined) {
-        state.set(action.configId, {
-          ...state.get(action.configId)!,
-          historyList: action.payload
-        })
-      } else {
-        state.set(action.configId, {
-          historyList: action.payload,
-          currentHistoryIndex: 0
-        })
-      }
-      return new Map(state)
-    case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
-      if (state.get(action.configId) !== undefined) {
-        state.set(action.configId, {
-          ...state.get(action.configId)!,
-          currentHistoryIndex: action.payload
-        })
-      }
-      return new Map(state)
-    case HistoryActionTypesEnum.RESET_HISTORY:
-      state.delete(action.configId)
-      return new Map(state)
-    default:
-      return state
-  }
-}
+export const historyReducer = (state: HistoryState = initState, action: HistoryAction): HistoryState => {
+    switch (action.type) {
+        case HistoryActionTypesEnum.SET_HISTORY_LIST:
+            if (state.get(action.configId) !== undefined) {
+                state.set(action.configId, { ...state.get(action.configId)!, historyList: action.payload });
+            } else {
+                state.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
+            }
+            return new Map(state);
+        case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
+            if (state.get(action.configId) !== undefined) {
+                state.set(action.configId, { ...state.get(action.configId)!, currentHistoryIndex: action.payload });
+            }
+            return new Map(state);
+        case HistoryActionTypesEnum.RESET_HISTORY:
+            state.delete(action.configId);
+            return new Map(state);
+        default:
+            return state;
+    }
+};
+
 ```
 
 new：
 
 ```tsx
-import { GameConfigId } from '../game/reducer.type'
-import { HistoryAction, HistoryActionTypesEnum } from './action.type'
-import { HistoryInfo, HistoryState } from './reducer.type'
+import { GameConfigId } from '../game/reducer.type';
+import { HistoryAction, HistoryActionTypesEnum } from './action.type';
+import { HistoryInfo, HistoryState } from './reducer.type';
 
-export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>()
+export const initState: HistoryState = new Map<GameConfigId, HistoryInfo>();
 
-export const historyReducer = (
-  state: HistoryState = initState,
-  action: HistoryAction
-): HistoryState => {
-  const newMap = new Map(state)
-  const historyInfo = newMap.get(action.configId)
-  switch (action.type) {
-    case HistoryActionTypesEnum.SET_HISTORY_LIST:
-      if (historyInfo) {
-        newMap.set(action.configId, {
-          ...historyInfo,
-          historyList: action.payload
-        })
-      } else {
-        newMap.set(action.configId, {
-          historyList: action.payload,
-          currentHistoryIndex: 0
-        })
-      }
-      return newMap
-    case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
-      if (historyInfo) {
-        newMap.set(action.configId, {
-          ...historyInfo,
-          currentHistoryIndex: action.payload
-        })
-      }
-      return newMap
-    case HistoryActionTypesEnum.RESET_HISTORY:
-      newMap.delete(action.configId)
-      return newMap
-    default:
-      return state
-  }
-}
+export const historyReducer = (state: HistoryState = initState, action: HistoryAction): HistoryState => {
+    const newMap = new Map(state);
+    const historyInfo = newMap.get(action.configId);
+    switch (action.type) {
+        case HistoryActionTypesEnum.SET_HISTORY_LIST:
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, historyList: action.payload });
+            } else {
+                newMap.set(action.configId, { historyList: action.payload, currentHistoryIndex: 0 });
+            }
+            return newMap;
+        case HistoryActionTypesEnum.SET_CURRENT_HISTORY_INDEX:
+            if (historyInfo) {
+                newMap.set(action.configId, { ...historyInfo, currentHistoryIndex: action.payload });
+            }
+            return newMap;
+        case HistoryActionTypesEnum.RESET_HISTORY:
+            newMap.delete(action.configId);
+            return newMap;
+        default:
+            return state;
+    }
+};
+
 ```
 
 #### 使用 await - async
@@ -905,20 +719,180 @@ new：
     }
 ```
 
+### 优化 4
+
+#### 解决 bug
+
+在组件更新后调用`aIPlaysChess`进行 AI 下棋并使用`setTimeout`延迟下棋操作会造成 bug：如果在 setimeout 的回调函数等待触发期间进行时间回溯，可能会在时间回溯后的空位置下棋。
+解决：添加`isAIplaying`标记，为`true`表示 AI 正在下棋，不能进行时间回溯。
+
+```tsx
+    /**
+     * AI下棋
+     * @param currentHistory 当前最新的棋盘记录，例如玩家下完棋后调用该方法时需要传入最新的棋盘记录（例如包含最新的棋盘二维列表squares），AI才能根据最新的棋盘记录进行正确下棋
+     * @returns
+     */
+    handleAIPlay = (currentHistory: HistoryObj) => {
+        if (!this.props.isAIMode) return;
+        const { playerInfoList, successNeedNum } = this.props;
+        const player = playerInfoList[currentHistory.nextPlayerIndex];
+        if (!player.isAI) return;
+
+        // 调用计算下棋位置的方法获取位置，并下棋
+        const opponentPlayer = playerInfoList[getPlayerIndex(playerInfoList, false)];
+        const { posY, posX } = calculateNextMove(currentHistory.squares, player.flag, opponentPlayer.flag, successNeedNum);
+        if (posY < 0 || posX < 0) return; // 棋盘已满
+        this.isAIplaying = true; // 设置AI正在下棋中，不能进行时间回溯
+        setTimeout(() => {
+            this.handlePlay({ posY, posX });
+            this.isAIplaying = false; // AI下棋完成
+        }, 300);
+    };
+```
+
+#### 不应该在组件更新后调用 AI 下棋
+
+old：
+
+```tsx
+    /** 组件更新 */
+    componentDidUpdate (): void {
+        // 如果是AI模式且下一位棋手是AI，则需要AI下棋
+        this.aIPlaysChess();
+    }
+```
+
+new：
+在玩家下棋后再进行 AI 下棋。
+
+```tsx
+    /**
+     * 处理玩家点击下棋的函数
+     * @param pos 当前棋子的位置
+     * @returns
+     */
+    handlePlayerPlay = (pos: PosInfo) => {
+        const { playerInfoList } = this.props;
+        const { currentHistory } = this.state;
+        const player = playerInfoList[currentHistory.nextPlayerIndex];
+        if (player.isAI) return; // 如果当前是AI下棋，则不允许玩家进行下棋操作
+        // 玩家下棋
+        const newHistory = this.handlePlay(pos);
+        // 当玩家下棋后需要AI继续下棋，AI下棋后不会调用该方法（保证不会发生死循环）
+        if (newHistory && newHistory.status === 'playing') this.handleAIPlay(newHistory);
+    };
+```
+
+#### 获取空位位置的逻辑提取为函数
+
+old：
+
+```tsx
+// 遍历棋盘上的每一个空位
+for (let row = 0; row < rowMax; row++) {
+    for (let col = 0; col < colMax; col++) {
+        if (!squares[row][col]) {
+            squares[row][col] = flag; // 尝试在该空位上放置当前玩家的棋子
+            // 递归调用minimax，切换玩家角色（因为到对手玩家下棋了）
+            best = Math.max(best, minimax(squares, false, flag, opponentFlag, successNeedNum, { posY: row, posX: col }));
+            squares[row][col] = null; // 回退，把该位置上的棋子恢复为空
+        }
+    }
+}
+```
+
+new：
+
+```tsx
+
+/**
+ * 获取棋盘中的空位
+ * @param squares 棋盘二维列表
+ */
+const getEmptyPos = (squares: SquaresList): PosInfo[] => {
+    const list: PosInfo[] = [];
+    const rowMax = squares.length; // 棋盘的行数
+    const colMax = squares[0].length; // 棋盘的列数
+    for (let row = 0; row < rowMax; row++) {
+        for (let col = 0; col < colMax; col++) {
+            if (!squares[row][col]) {
+                list.push({ posY: row, posX: col });
+            }
+        }
+    }
+    return list;
+};
+
+```
+
+#### 优化棋盘格子的渲染：提取为组件并进行缓存优化
+
+old：
+
+```tsx
+    render () {
+        const { latticeWidth, squares, onLinePointPosList } = this.props;
+        return (
+            <div className="board-container">
+                {/* 遍历二维列表，渲染每个格子 */}
+                {squares.map((list, row) => {
+                    return (<div key={row} className='board-row'>
+                        {list.map(((value, col) => (<div
+                            // 为胜利时在一条线上的点添加高亮样式
+                            className={classNames('square', { 'active-square': onLinePointPosList.some(pos => pos.posY === row && pos.posX === col) })}
+                            style={{ width: latticeWidth, height: latticeWidth }  }
+                            onClick={() => this.props.onPlay(row, col)}
+                            key={col}
+                        >
+                            {value}
+                        </div>)))}
+                    </div>);
+                })}
+            </div>
+        );
+    }
+```
+
+new：
+`Checkerboard`组件使用`PureComponent`进行 state 和 props 的浅比较，注意传入`Checkerboard`组件的 props 如果是引用类型则需要进行缓存。
+
+```tsx
+    render () {
+        const { squares, onLinePointPosList } = this.props;
+        return (
+            <div className="board-container">
+                {/* 遍历二维列表，渲染每个格子 */}
+                {squares.map((list, row) => {
+                    return (<div key={row} className='board-row'>
+                        {list.map(((value, col) => (<Checkerboard
+                            key={col}
+                            isActive={onLinePointPosList.some(pos => pos.posY === row && pos.posX === col)}
+                            posY={row}
+                            posX={col}
+                            flag={value}
+                            onClickCheckerboard={ this.handleClickCheckerboard }
+                        ></Checkerboard>)))}
+                    </div>);
+                })}
+            </div>
+        );
+    }
+```
+
 ## 要点实现记录
 
 ### 计算棋局的胜利者
 
 ```tsx
 /** 一个点的位置记录，posY：纵坐标（行），posX：横坐标（列） */
-export type PosInfo = { posY: number; posX: number }
+export type PosInfo = {posY:number, posX:number}
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
-export type SquaresList = (string | null)[][]
+export type SquaresList = ((string | null)[])[]
 ```
 
 ```tsx
-import { SquaresList } from '../components/Board/Board.type'
-import { PosInfo } from './index.type'
+import { SquaresList } from '../components/Board/Board.type';
+import { PosInfo } from './index.type';
 
 /**
  * 计算胜利者。
@@ -931,97 +905,77 @@ import { PosInfo } from './index.type'
  * @param posY 棋子纵坐标(行位置)
  * @returns 获胜者的标记（字符串）和在同一条线上的点的坐标
  */
-export const calculateWinner = (
-  squares: SquaresList,
-  successNeedNum: number,
-  posX: number,
-  posY: number
-) => {
-  /** 保存有玩家胜利时，在同一条线上的点的坐标 */
-  let onLinePointPosList: PosInfo[] = []
-  /**
-   * 这个函数会检查在给定的方向上是否有连续的successNeedNum个相同棋子。
-   * @param dx 在x轴上的移动步长
-   * @param dy 在y轴上的移动步长
-   * @returns
-   */
-  const checkDirection = (dx: number, dy: number) => {
-    let currentCount = 1 // 当前连续的棋子数量
-    onLinePointPosList.push({ posY, posX })
+export const calculateWinner = (squares: SquaresList, successNeedNum: number, posX: number, posY: number) => {
+    /** 保存有玩家胜利时，在同一条线上的点的坐标 */
+    let onLinePointPosList:PosInfo[] = [];
+    /**
+     * 这个函数会检查在给定的方向上是否有连续的successNeedNum个相同棋子。
+     * @param dx 在x轴上的移动步长
+     * @param dy 在y轴上的移动步长
+     * @returns
+     */
+    const checkDirection = (dx: number, dy: number) => {
+        let currentCount = 1; // 当前连续的棋子数量
+        onLinePointPosList.push({ posY, posX });
 
-    // 向前检查
-    /** 移动后的横坐标 */
-    let newX = posX + dx
-    /** 移动后的纵坐标 */
-    let newY = posY + dy
-    while (
-      newX >= 0 &&
-      newX < squares[0].length &&
-      newY >= 0 &&
-      newY < squares.length
-    ) {
-      // 确保在棋盘内
-      // 棋子相同
-      if (squares[newY][newX] === squares[posY][posX]) {
-        onLinePointPosList.push({ posY: newY, posX: newX })
-        newX += dx
-        newY += dy
-        currentCount++
-      } else {
-        // 棋子不连续了，直接结束
-        break
-      }
+        // 向前检查
+        /** 移动后的横坐标 */
+        let newX = posX + dx;
+        /** 移动后的纵坐标 */
+        let newY = posY + dy;
+        while (newX >= 0 && newX < squares[0].length && newY >= 0 && newY < squares.length) { // 确保在棋盘内
+            // 棋子相同
+            if (squares[newY][newX] === squares[posY][posX]) {
+                onLinePointPosList.push({ posY: newY, posX: newX });
+                newX += dx;
+                newY += dy;
+                currentCount++;
+            } else {
+                // 棋子不连续了，直接结束
+                break;
+            }
+        }
+
+        // 向后检查
+        newX = posX - dx;
+        newY = posY - dy;
+        while (newX >= 0 && newX < squares[0].length && newY >= 0 && newY < squares.length) {
+            if (squares[newY][newX] === squares[posY][posX]) {
+                onLinePointPosList.push({ posY: newY, posX: newX });
+                newX -= dx;
+                newY -= dy;
+                currentCount++;
+            } else {
+                break;
+            }
+        }
+
+        if (currentCount >= successNeedNum) {
+            return true;
+        }
+        onLinePointPosList = [];
+        return false;
+    };
+
+    // 检查所有方向：调用checkDirection四次，分别检查水平、垂直、正对角线和反对角线方向。
+    if (checkDirection(1, 0) || checkDirection(0, 1) || checkDirection(1, 1) || checkDirection(-1, 1)) {
+        return {
+            winner: squares[posY][posX],
+            onLinePointPosList,
+        };
     }
-
-    // 向后检查
-    newX = posX - dx
-    newY = posY - dy
-    while (
-      newX >= 0 &&
-      newX < squares[0].length &&
-      newY >= 0 &&
-      newY < squares.length
-    ) {
-      if (squares[newY][newX] === squares[posY][posX]) {
-        onLinePointPosList.push({ posY: newY, posX: newX })
-        newX -= dx
-        newY -= dy
-        currentCount++
-      } else {
-        break
-      }
-    }
-
-    if (currentCount >= successNeedNum) {
-      return true
-    }
-    onLinePointPosList = []
-    return false
-  }
-
-  // 检查所有方向：调用checkDirection四次，分别检查水平、垂直、正对角线和反对角线方向。
-  if (
-    checkDirection(1, 0) ||
-    checkDirection(0, 1) ||
-    checkDirection(1, 1) ||
-    checkDirection(-1, 1)
-  ) {
+    // 如果没有获胜者
     return {
-      winner: squares[posY][posX],
-      onLinePointPosList
-    }
-  }
-  // 如果没有获胜者
-  return {
-    winner: null,
-    onLinePointPosList: []
-  }
-}
+        winner: null,
+        onLinePointPosList: [],
+    };
+};
+
 ```
 
 ### 井字棋实现 AI 下棋
 
-在 3\*3 的二维数组实现的井字棋游戏中，增加和玩家对抗的 AI（仅实现井字棋即可），要求如下：
+在3*3的二维数组实现的井字棋游戏中，增加和玩家对抗的AI（仅实现井字棋即可），要求如下：
 
 1. AI 如果先手，则需要尽可能赢，不能输
 2. AI 如果后手，则需要保证不输 ，并且在可能的情况下赢
@@ -1122,7 +1076,7 @@ export const calculateWinner = (
  */
 ```
 
-##### AI 先手， 玩家后手
+##### AI先手， 玩家后手
 
 ```tsx
 // 1. AI"X"是先手
@@ -1207,16 +1161,17 @@ export const calculateWinner = (
  */
 ```
 
-#### 求解最优下棋位置的算法：极大极小算法（Minimax Algorithm）
+#### 求解最优下棋位置的算法：极小化极大算法（Minimax Algorithm）
 
 ##### 大致骨架
 
 ```tsx
+
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
-type SquaresList = (string | null)[][]
+type SquaresList = ((string | null)[])[]
 
 /** 一个点的位置记录，posY：纵坐标（行），posX：横坐标（列） */
-export type PosInfo = { posY: number; posX: number }
+export type PosInfo = {posY:number, posX:number}
 
 /**
  * 给出一个棋盘状态的二维列表和一个棋子标记，返回最佳的下棋位置
@@ -1224,22 +1179,24 @@ export type PosInfo = { posY: number; posX: number }
  * @param flag 希望尽可能获胜的棋子标记
  * @returns 最佳的该棋子下棋的位置
  */
-function calculateNextMove(squares: SquaresList, flag: string): PosInfo {}
+function calculateNextMove(squares: SquaresList, flag: string): PosInfo {
+
+}
 
 // 1. 玩家"O"是先手
 const squares = [
-  [null, null, null],
-  [null, 'O', null],
-  [null, null, null]
+    [null, null, null],
+    [null, 'O', null],
+    [null, null, null],
 ]
 
 // 2. AI"X" 调用 calculateNextMove 方法计算最优的下一步棋的位置
-const res = calculateNextMove(squares, 'X')
+const res = calculateNextMove(squares, 'X');
 ```
 
 ##### 算法思路
 
-为了实现`calculateNextMove`函数，可以使用简单的极大极小算法（Minimax Algorithm），这是一种经典的递归算法，用于两人游戏（如井字棋）中计算最佳移动。该算法通过递归计算每一个可能的移动，评估局面，然后选择最优策略。
+为了实现`calculateNextMove`函数，可以使用极小化极大算法（Minimax Algorithm），这是一种经典的递归算法，用于两人游戏（如井字棋）中计算最佳移动。该算法通过递归计算每一个可能的移动，评估局面，然后选择最优策略。
 以下是实现步骤：
 
 1. **终局判断函数**`** checkWinner  **`：判断当前棋局是否有胜者或平局。
@@ -1250,11 +1207,12 @@ const res = calculateNextMove(squares, 'X')
 ##### 算法实现
 
 ```tsx
+
 /** 棋盘二维列表，其中：字符串表示棋子，或null表示空 */
-type SquaresList = (string | null)[][]
+type SquaresList = ((string | null)[])[]
 
 /** 一个点的位置记录，posY：纵坐标（行），posX：横坐标（列） */
-export type PosInfo = { posY: number; posX: number }
+export type PosInfo = { posY: number, posX: number }
 
 /**
  * 检查棋盘是否有胜者
@@ -1262,60 +1220,24 @@ export type PosInfo = { posY: number; posX: number }
  * @returns 如果有胜者则返回胜者的棋子标记，否则返回null
  */
 function checkWinner(squares: SquaresList): string | null {
-  const lines = [
-    [
-      [0, 0],
-      [0, 1],
-      [0, 2]
-    ], // 第一行
-    [
-      [1, 0],
-      [1, 1],
-      [1, 2]
-    ], // 第二行
-    [
-      [2, 0],
-      [2, 1],
-      [2, 2]
-    ], // 第三行
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0]
-    ], // 第一列
-    [
-      [0, 1],
-      [1, 1],
-      [2, 1]
-    ], // 第二列
-    [
-      [0, 2],
-      [1, 2],
-      [2, 2]
-    ], // 第三列
-    [
-      [0, 0],
-      [1, 1],
-      [2, 2]
-    ], // 对角线
-    [
-      [0, 2],
-      [1, 1],
-      [2, 0]
-    ] // 对角线
-  ]
-  // 检查所有可能连成一条线的位置组，是否连成了一条线
-  for (let i = 0; i < lines.length; i++) {
-    const [[a, b], [c, d], [e, f]] = lines[i]
-    if (
-      squares[a][b] &&
-      squares[a][b] === squares[c][d] &&
-      squares[a][b] === squares[e][f]
-    ) {
-      return squares[a][b]
+    const lines = [
+        [[0, 0], [0, 1], [0, 2]],// 第一行
+        [[1, 0], [1, 1], [1, 2]],// 第二行
+        [[2, 0], [2, 1], [2, 2]],// 第三行
+        [[0, 0], [1, 0], [2, 0]],// 第一列
+        [[0, 1], [1, 1], [2, 1]],// 第二列
+        [[0, 2], [1, 2], [2, 2]],// 第三列
+        [[0, 0], [1, 1], [2, 2]],// 对角线
+        [[0, 2], [1, 1], [2, 0]],// 对角线
+    ];
+    // 检查所有可能连成一条线的位置组，是否连成了一条线
+    for (let i = 0; i < lines.length; i++) {
+        const [[a, b], [c, d], [e, f]] = lines[i];
+        if (squares[a][b] && squares[a][b] === squares[c][d] && squares[a][b] === squares[e][f]) {
+            return squares[a][b];
+        }
     }
-  }
-  return null
+    return null;
 }
 
 /**
@@ -1325,13 +1247,13 @@ function checkWinner(squares: SquaresList): string | null {
  * @returns 如果当前棋子胜利返回10分，对方胜利返回-10分，平局返回0分
  */
 function evaluate(squares: SquaresList, flag: string): number {
-  const winner = checkWinner(squares)
-  if (winner === flag) {
-    return 10
-  } else if (winner && winner !== flag) {
-    return -10
-  }
-  return 0
+    const winner = checkWinner(squares);
+    if (winner === flag) {
+        return 10;
+    } else if (winner && winner !== flag) {
+        return -10;
+    }
+    return 0;
 }
 
 /**
@@ -1343,57 +1265,45 @@ function evaluate(squares: SquaresList, flag: string): number {
  * @param opponentFlag 对方棋子标记
  * @returns 当前棋盘状态的最佳得分
  */
-function minimax(
-  squares: SquaresList,
-  depth: number,
-  isMaximizing: boolean,
-  flag: string,
-  opponentFlag: string
-): number {
-  // 评估上次放置棋子的位置的分数
-  const score = evaluate(squares, flag)
-  if (score === 10 || score === -10) {
-    return score
-  }
-
-  // 棋盘已经满了，不需要再遍历棋盘空位下棋了，否则继续遍历棋盘空位进行下棋，直到：有玩家获胜或者棋盘满了
-  if (squares.flat().every((cell) => cell)) {
-    return 0
-  }
-
-  if (isMaximizing) {
-    let best = -Infinity
-    // 遍历棋盘上的每一个空位
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (!squares[i][j]) {
-          squares[i][j] = flag // 尝试在该空位上放置当前玩家的棋子
-          // 递归调用minimax，切换玩家角色（因为到对手玩家下棋了）
-          best = Math.max(
-            best,
-            minimax(squares, depth + 1, false, flag, opponentFlag)
-          )
-          squares[i][j] = null // 回退
-        }
-      }
+function minimax(squares: SquaresList, depth: number, isMaximizing: boolean, flag: string, opponentFlag: string): number {
+    // 评估上次放置棋子的位置的分数
+    const score = evaluate(squares, flag);
+    if (score === 10 || score === -10) {
+        return score;
     }
-    return best
-  } else {
-    let best = Infinity
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        if (!squares[i][j]) {
-          squares[i][j] = opponentFlag // 尝试在该空位上放置对手玩家的棋子
-          best = Math.min(
-            best,
-            minimax(squares, depth + 1, true, flag, opponentFlag)
-          )
-          squares[i][j] = null
-        }
-      }
+
+    // 棋盘已经满了，不需要再遍历棋盘空位下棋了，否则继续遍历棋盘空位进行下棋，直到：有玩家获胜或者棋盘满了
+    if (squares.flat().every(cell => cell)) {
+        return 0;
     }
-    return best
-  }
+
+    if (isMaximizing) {
+        let best = -Infinity;
+        // 遍历棋盘上的每一个空位
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (!squares[i][j]) {
+                    squares[i][j] = flag; // 尝试在该空位上放置当前玩家的棋子
+                    // 递归调用minimax，切换玩家角色（因为到对手玩家下棋了）
+                    best = Math.max(best, minimax(squares, depth + 1, false, flag, opponentFlag));
+                    squares[i][j] = null; // 回退
+                }
+            }
+        }
+        return best;
+    } else {
+        let best = Infinity;
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (!squares[i][j]) {
+                    squares[i][j] = opponentFlag; // 尝试在该空位上放置对手玩家的棋子
+                    best = Math.min(best, minimax(squares, depth + 1, true, flag, opponentFlag));
+                    squares[i][j] = null;
+                }
+            }
+        }
+        return best;
+    }
 }
 
 /**
@@ -1403,46 +1313,49 @@ function minimax(
  * @returns 最佳的该棋子下棋的位置
  */
 function calculateNextMove(squares: SquaresList, flag: string): PosInfo {
-  squares = JSON.parse(JSON.stringify(squares))
-  let bestVal = -Infinity
-  let bestMove: PosInfo = { posY: -1, posX: -1 }
-  const opponentFlag = flag === 'X' ? 'O' : 'X'
-  // 遍历棋盘上的每一个空位
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (!squares[i][j]) {
-        squares[i][j] = flag // 尝试在该空位上放置当前玩家的棋子
-        let moveVal = minimax(squares, 0, false, flag, opponentFlag)
-        squares[i][j] = null // 回退，把该位置上的棋子恢复为空
-        // 如果当前位置的分数大于最佳分数，则更新最佳分数和最佳走法位置
-        // 因为是当前玩家（flag）希望尽可能获胜，而在评估函数中，当前玩家获胜是+10分，所以分数越大越好
-        if (moveVal > bestVal) {
-          bestMove = { posY: i, posX: j }
-          bestVal = moveVal
+    squares = JSON.parse(JSON.stringify(squares))
+    let bestVal = -Infinity;
+    let bestMove: PosInfo = { posY: -1, posX: -1 };
+    const opponentFlag = flag === 'X' ? 'O' : 'X';
+    // 遍历棋盘上的每一个空位
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (!squares[i][j]) {
+                squares[i][j] = flag; // 尝试在该空位上放置当前玩家的棋子
+                let moveVal = minimax(squares, 0, false, flag, opponentFlag);
+                squares[i][j] = null; // 回退，把该位置上的棋子恢复为空
+                // 如果当前位置的分数大于最佳分数，则更新最佳分数和最佳走法位置
+                // 因为是当前玩家（flag）希望尽可能获胜，而在评估函数中，当前玩家获胜是+10分，所以分数越大越好
+                if (moveVal > bestVal) {
+                    bestMove = { posY: i, posX: j };
+                    bestVal = moveVal;
+                }
+            }
         }
-      }
     }
-  }
 
-  return bestMove
+    return bestMove;
 }
+
 
 // 1. 玩家"O"是先手
 const squares = [
-  [null, null, null],
-  [null, 'O', null],
-  [null, null, null]
+    [null, null, null],
+    [null, 'O', null],
+    [null, null, null],
 ]
 
 // 2. AI"X" 调用 calculateNextMove 方法计算最优的下一步棋的位置
-const res = calculateNextMove(squares, 'X')
-console.log(res)
+const res = calculateNextMove(squares, 'X');
+console.log(res);
 // { posY: 0, posX: 0 }
+
 ```
 
 ##### 图解算法
 
 ```tsx
+
 // 1. AI"O"是先手
 // 省略。。。
 // 6. 玩家"X"
@@ -1455,14 +1368,15 @@ console.log(res)
  */
 
 const squares = [
-  ['O', 'X', 'O'],
-  ['X', null, null],
-  ['X', 'O', null]
+    ['O', 'X', 'O'],
+    ['X', null, null],
+    ['X', 'O', null],
 ]
 
 // 7. AI"O" 调用 calculateNextMove 方法计算最优的下一步棋的位置
-const res = calculateNextMove(squares, 'O')
-console.log(res)
+const res = calculateNextMove(squares, 'O');
+console.log(res);
+
 ```
 
 ![image.png](https://cdn.nlark.com/yuque/0/2024/png/34576819/1720868819659-e7e7926b-3a0f-4e3d-99b0-07ddc42c9a2a.png#averageHue=%23ecebeb&clientId=ube135a04-c821-4&from=paste&id=eJxE8&originHeight=1388&originWidth=2016&originalType=url&ratio=1&rotation=0&showTitle=false&size=253387&status=done&style=none&taskId=u12b79dc0-4fd8-418a-847b-3c92599f300&title=)
@@ -1470,32 +1384,27 @@ console.log(res)
 
 ##### 复杂度分析
 
-极大极小算法的时间复杂度分析主要取决于递归调用的次数和每次调用中所进行的操作。对于一个 3x3 的井字棋（Tic-Tac-Toe）游戏，时间复杂度如下：
+极大极小算法的时间复杂度分析主要取决于递归调用的次数和每次调用中所进行的操作。对于一个3x3的井字棋（Tic-Tac-Toe）游戏，时间复杂度如下：
 
-1. **递归树的深度**：对于一个 3x3 的井字棋，最多有 9 个空位，因此递归树的最大深度为 9。
-2. **每层递归的分支数量**：在最坏的情况下，每个空位都可能是一个有效的移动。因此，对于每一层，可能有最多 9 个、8 个、7 个……直到 1 个可能的分支。
+1. **递归树的深度**：对于一个3x3的井字棋，最多有9个空位，因此递归树的最大深度为9。
+2. **每层递归的分支数量**：在最坏的情况下，每个空位都可能是一个有效的移动。因此，对于每一层，可能有最多9个、8个、7个……直到1个可能的分支。
 
-综合考虑，这形成了一个递归树，其节点数大致是 9!（即 9 的阶乘），因为每一层的分支数量分别是 9、8、7……1。
-因此，极大极小算法在井字棋中的最坏时间复杂度为 O(9!)。
+综合考虑，这形成了一个递归树，其节点数大致是9!（即9的阶乘），因为每一层的分支数量分别是9、8、7……1。
+因此，极大极小算法在井字棋中的最坏时间复杂度为O(9!)。
 为了更直观地理解，让我们简化一些：
 
-- 第一层有 9 个选择。
-- 第二层有 8 个选择。
-- 第三层有 7 个选择。
+- 第一层有9个选择。
+- 第二层有8个选择。
+- 第三层有7个选择。
 - …
 
 这意味着总的节点数是：
 $9 \times 8 \times 7 \times ... \times 1 = 9! = 362,880$
-虽然这个数目看起来很大，但对于现代计算机来说，这个量级是可以处理的。实际上，由于井字棋的简单性和有限的局面，许多分支在较早的阶段就会被剪枝（使用 α-β 剪枝技术），实际运行时间会更短。
-α-β 剪枝：
-α-β 剪枝是一种用于减少极大极小算法中节点数量的优化技术。它通过在搜索树中剪除一些不必要的分支，减少了计算量。对于井字棋，α-β 剪枝可以显著减少实际需要评估的局面数量，使得实际时间复杂度远小于 O(9!)。
+虽然这个数目看起来很大，但对于现代计算机来说，这个量级是可以处理的。实际上，由于井字棋的简单性和有限的局面，许多分支在较早的阶段就会被剪枝（使用α-β剪枝技术），实际运行时间会更短。
 
 #### 参考
 
-[Minimax 博弈算法设计井字棋 AI(Golang) - RedJACK~ - 博客园](https://www.cnblogs.com/jackonessalad/articles/16358473.html)
+[Minimax博弈算法设计井字棋AI(Golang) - RedJACK~ - 博客园](https://www.cnblogs.com/jackonessalad/articles/16358473.html)
+[– 思源博客](https://www.siyuanblog.cn/archives/minmax)
 [精通井字棋：策略、规则和说明](https://tictactoefree.com/zh/guize)
-[在线玩井字棋。1 人或 2 人的游戏。](https://tictactoefree.com/zh/)
-
-```
-
-```
+[在线玩井字棋。1人或2人的游戏。](https://tictactoefree.com/zh/)
