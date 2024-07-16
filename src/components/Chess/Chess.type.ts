@@ -1,5 +1,4 @@
 import { GameConfigId } from '../../store/modules/game/reducer.type';
-import { HistoryObj } from '../../store/modules/history/reducer.type';
 
 /** 玩家信息 */
 export type PlayerInfo = {
@@ -27,10 +26,4 @@ export type ChessProps = {
     playerInfoList: PlayerInfo[];
     /** 是否是AI模式 */
     isAIMode: boolean;
-}
-
-/** 棋类组件的State的类型 */
-export type ChessState = {
-    /** 当前历史记录 */
-    currentHistory: HistoryObj;
 }

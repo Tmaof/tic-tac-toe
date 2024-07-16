@@ -58,3 +58,20 @@ export const setCurrentHistoryIndexUtil = (configId: GameConfigId, currentIndex:
 export const resetHistoryUtil = (configId: GameConfigId) => {
     store.dispatch(resetHistory(configId));
 };
+
+/**
+ * 根据配置id获取状态记录
+ * @param configId 配置id
+ * @param rowNum 棋盘的行数
+ * @param colNum 棋盘的列数
+ */
+export const getHistoryStateByConfigId = (configId: GameConfigId, rowNum: number, colNum: number) => {
+    const historyInfoMap = store.getState().history;
+    // 如果没有状态记录，那么初始化一个状态记录
+    const historyState = historyInfoMap.get(configId) || getInitHistoryInfo(rowNum, colNum);
+    const { currentHistoryIndex, historyList } = historyState;
+    return {
+        ...historyState,
+        currentHistory: historyList[currentHistoryIndex],
+    };
+};

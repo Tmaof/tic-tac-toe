@@ -1,13 +1,13 @@
 import { PureComponent } from 'react';
 import Board from '../Board/Board';
-import { ChessProps, ChessState } from './Chess.type';
 import { calculateNextMove, calculateWinner } from '../../utils';
-import { RootState } from '../../store';
-import { HistoryInfo, HistoryObj } from '../../store/modules/history/reducer.type';
-import { connect } from 'react-redux';
-import { getInitHistoryInfo, setCurrentHistoryIndexUtil, setHistoryListUtil } from '../../store/modules/history/utils';
+import { HistoryObj } from '../../store/modules/history/reducer.type';
+import { getHistoryStateByConfigId, setCurrentHistoryIndexUtil, setHistoryListUtil } from '../../store/modules/history/utils';
 import { PosInfo } from '../../utils/index.type';
 import { getPlayerIndex, getWinnerInfo } from './utils';
+import { ChessProps } from './Chess.type';
+import { RootState } from '../../store';
+import { connect } from 'react-redux';
 
 /** 映射状态到组件的props */
 const mapStateToProps = (state: RootState) => {
@@ -16,44 +16,16 @@ const mapStateToProps = (state: RootState) => {
 
 type AllChessProps = ChessProps & ReturnType<typeof mapStateToProps>;
 
-type AllChessState = HistoryInfo & ChessState
 
 /** 棋类游戏组件 */
-class Chess extends PureComponent<AllChessProps, AllChessState> {
+class Chess extends PureComponent<AllChessProps> {
     /** 当前AI是否正在下棋 */
     isAIplaying = false;
-    constructor (props: AllChessProps) {
-        super(props);
-        const { rowNum, colNum, playerInfoList, isAIMode } = this.props;
-        // 初始化棋盘历史信息
-        const { historyList, currentHistoryIndex } = getInitHistoryInfo(rowNum, colNum);
-        const currentHistory = historyList[currentHistoryIndex];
-        // AI是否是先手
-        const isAIFirst = isAIMode && Math.random() > 0.5;
-        if (isAIFirst) currentHistory.nextPlayerIndex = getPlayerIndex(playerInfoList, true);
-        this.state = {
-            historyList,
-            currentHistory,
-            currentHistoryIndex,
-        };
-    }
-
-    /** 每次更新时，获取一个派生的state从props */
-    static getDerivedStateFromProps (nextProps: AllChessProps, prevState: AllChessState) {
-        /** 各个棋盘历史信息的Map */
-        const { historyInfoMap, configId } = nextProps;
-        /** 用当前棋盘的id去获取当前棋盘的历史信息 */
-        const history = historyInfoMap.get(configId);
-        if (!history) return prevState; // 初次渲染时historyInfoMap还没有该棋盘的历史信息
-        const { historyList, currentHistoryIndex } = history;
-        const currentHistory = historyList[currentHistoryIndex];
-        return { ...prevState, ...history, currentHistory };
-    }
 
     /** 组件挂载 */
     componentDidMount () {
-        const { playerInfoList } = this.props;
-        const { currentHistory } = this.state;
+        const { playerInfoList, configId, rowNum, colNum } = this.props;
+        const { currentHistory } = getHistoryStateByConfigId(configId, rowNum, colNum);
         const player = playerInfoList[currentHistory.nextPlayerIndex];
         // AI先手，那么AI先下棋
         if (player.isAI) this.handleAIPlay(currentHistory);
@@ -65,8 +37,8 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
      * @returns 成功时返回最新的历史信息，失败时返回undefined
      */
     handlePlay = (pos: PosInfo) => {
-        const { successNeedNum, playerInfoList, configId } = this.props;
-        const { historyList, currentHistoryIndex, currentHistory } = this.state;
+        const { successNeedNum, playerInfoList, configId, rowNum, colNum } = this.props;
+        const { historyList, currentHistoryIndex, currentHistory } = getHistoryStateByConfigId(configId, rowNum, colNum);
         const player = playerInfoList[currentHistory.nextPlayerIndex];
         const { posY, posX } = pos;
 
@@ -99,8 +71,8 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
      * @returns
      */
     handlePlayerPlay = (pos: PosInfo) => {
-        const { playerInfoList } = this.props;
-        const { currentHistory } = this.state;
+        const { playerInfoList, configId, rowNum, colNum } = this.props;
+        const { currentHistory } = getHistoryStateByConfigId(configId, rowNum, colNum);
         const player = playerInfoList[currentHistory.nextPlayerIndex];
         if (player.isAI) return; // 如果当前是AI下棋，则不允许玩家进行下棋操作
         // 玩家下棋
@@ -132,18 +104,20 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
     };
 
     /** 处理时间旅行 */
-    handleTimeTravel = (configId:number, index:number) => {
+    handleTimeTravel = (index:number) => {
         if (this.isAIplaying) return window.confirm('请等待AI下棋完成！');// AI正在下棋中，不能进行时间回溯
-        const history = this.state.historyList[index];
-        const player = this.props.playerInfoList[history.nextPlayerIndex];
+        const { playerInfoList, rowNum, colNum, configId } = this.props;
+        const { historyList } = getHistoryStateByConfigId(configId, rowNum, colNum);
+        const history = historyList[index];
+        const player = playerInfoList[history.nextPlayerIndex];
         if (player.isAI) return window.confirm('只能回到自己的状态');
         setCurrentHistoryIndexUtil(configId, index);
     };
 
     /** 获取游戏状态的文本 */
     getGameStatusText = () => {
-        const { playerInfoList } = this.props;
-        const { currentHistory } = this.state;
+        const { playerInfoList, configId, rowNum, colNum } = this.props;
+        const { currentHistory } = getHistoryStateByConfigId(configId, rowNum, colNum);
         const { status, winner } = currentHistory;
         const player = playerInfoList[currentHistory.nextPlayerIndex];
         switch (status) {
@@ -159,8 +133,8 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
     };
 
     render () {
-        const { playerInfoList, configId  } = this.props;
-        const { historyList, currentHistory } = this.state;
+        const { playerInfoList, configId, rowNum, colNum } = this.props;
+        const { historyList, currentHistory } = getHistoryStateByConfigId(configId, rowNum, colNum);
 
         return (
             <div>
@@ -181,7 +155,7 @@ class Chess extends PureComponent<AllChessProps, AllChessState> {
                             const description = `回到状态 #${index}-${playerInfoList[history.nextPlayerIndex].name}`;
                             return (
                                 <li key={index}>
-                                    <button onClick={() => this.handleTimeTravel(configId, index)}>{description}</button>
+                                    <button onClick={() => this.handleTimeTravel(index)}>{description}</button>
                                 </li>
                             );
                         })
